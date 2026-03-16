@@ -1,0 +1,38 @@
+.comment-item {
+  background-color: #f9f9f9;
+  padding: 8px 12px;
+  border-radius: 8px;
+  margin-bottom: 4px;
+  font-size: 14px;
+  line-height: 1.4;
+  word-wrap: break-word;
+}
+
+button {
+  margin-top: 4px;
+  margin-right: 4px;
+  padding: 4px 8px;
+  font-size: 13px;
+  cursor: pointer;
+  border: none;
+  border-radius: 4px;
+  background-color: #e0e0e0;
+  transition: background-color 0.2s;
+}
+
+button:hover {
+  background-color: #8a8484;
+}
+
+input {
+  width: 90%;
+  padding: 6px 8px;
+  margin-right: 4px;
+  font-size: 13px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+}
+
+div[style*="margin-left"] {
+  margin-top: 6px;
+}

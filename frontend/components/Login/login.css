@@ -1,0 +1,67 @@
+.register{
+    margin-top: 5px;
+    font-size: 15px;
+    text-align: center;
+}
+
+.register_link{
+    color: rgb(53, 134, 211);
+    cursor: pointer;
+}
+
+.loginForm{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.main-form{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.formm{
+    padding: 15px 10px;
+    background-color: white;
+    border-radius: 5px;
+}
+
+.register_heading {
+  font-size: 24px;
+  font-weight: 900;
+  color: #212121;
+  text-align: left;
+  margin-bottom: 12px;
+}
+
+.signin{
+  border-radius: 999px !important;
+  text-transform: none !important;
+  padding: 12px !important;
+  font-weight: 600 !important;
+  border: 1px solid #d0d0d0 !important;
+}
+
+.terms-text {
+  font-size: 10px;
+  color: #666;
+}
+
+.blue-link {
+  color: #0a66c2;
+  font-weight: 600;
+  font-size: 12px;
+  cursor: pointer;
+  margin-left: 4px;
+}
+
+.signin-btn {
+  border-radius: 999px !important;
+  text-transform: none !important;
+  background: #0a66c2 !important;
+  padding: 12px !important;
+  font-weight: 600 !important;
+  box-shadow: none !important;
+}

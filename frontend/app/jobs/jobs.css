@@ -1,0 +1,91 @@
+.notification-page {
+  background: #f3f2ef;
+  min-height: 100vh;
+}
+
+.notification-body {
+  max-width: 1128px;
+  margin: 24px auto;
+  display: grid;
+  grid-template-columns: 260px 555px 300px;
+  gap: 24px;
+  align-items: flex-start;
+}
+
+.notification-main {
+  display: flex;
+  flex-direction: column;
+}
+
+.notification-filter {
+  background: white;
+  border-radius: 10px;
+  border: 1px solid #e0e0e0;
+  padding: 12px 16px;
+  margin-bottom: 12px;
+}
+
+.MuiToggleButtonGroup-root {
+  gap: 8px;
+}
+
+.MuiToggleButton-root {
+  text-transform: none !important;
+  border-radius: 20px !important;
+  padding: 6px 14px !important;
+  border: 1px solid #e0e0e0 !important;
+  font-size: 14px !important;
+}
+
+.MuiToggleButton-root.Mui-selected {
+  background: #0a66c2 !important;
+  color: white !important;
+}
+
+.notification-card {
+  background: white;
+  border-radius: 10px;
+  border: 1px solid #e0e0e0;
+  padding: 14px 16px;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 8px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.notification-card:hover {
+  background: #f3f2ef;
+}
+
+.notification-avatar {
+  width: 48px;
+  height: 48px;
+}
+
+.notification-content {
+  flex: 1;
+}
+
+.notification-text {
+  font-size: 14px;
+  color: #333;
+  line-height: 1.4;
+}
+
+.notification-time {
+  font-size: 12px;
+  color: #666;
+  margin-top: 4px;
+}
+
+.notification-empty {
+  background: white;
+  border-radius: 10px;
+  border: 1px solid #e0e0e0;
+  padding: 30px;
+  text-align: center;
+  font-size: 14px;
+  color: #666;
+}

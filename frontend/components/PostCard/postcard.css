@@ -1,0 +1,132 @@
+/* POST CARD */
+
+.post-card{
+  background:#fff;
+  border-radius:10px;
+  padding:16px;
+  margin-bottom:14px;
+  border:1px solid #e0e0e0;
+}
+
+/* REPOST LABEL */
+
+.repost-label{
+  font-size:13px;
+  color:#666;
+  margin-bottom:8px;
+}
+
+/* HEADER */
+
+.post-header{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+.avatar{
+  width:40px;
+  height:40px;
+  border-radius:50%;
+  object-fit:cover;
+}
+
+.post-header h4{
+  font-size:14px;
+  font-weight:600;
+}
+
+.role{
+  font-size:12px;
+  color:#666;
+}
+
+/* POST TEXT */
+
+.post-text{
+  margin-top:10px;
+  font-size:14px;
+  line-height:1.5;
+}
+
+/* IMAGE GALLERY */
+
+.image-gallery{
+  margin-top:10px;
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+}
+
+.post-image{
+  width:100%;
+  border-radius:8px;
+  object-fit:cover;
+}
+
+/* DIVIDER */
+
+.divider{
+  border-top:1px solid #e6e6e6;
+  margin:12px 0 8px;
+}
+
+/* ACTION BAR */
+
+.post-actions{
+  display:flex;
+  justify-content:space-around;
+  align-items:center;
+}
+
+.post-actions button{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  border:none;
+  background:none;
+  cursor:pointer;
+  font-size:14px;
+  padding:6px 10px;
+  border-radius:6px;
+}
+
+.post-actions button:hover{
+  background:#f3f2ef;
+}
+
+/* COMMENTS */
+
+.comments-section{
+  margin-top:12px;
+}
+
+.comment-input{
+  width:100%;
+  border:1px solid #ddd;
+  border-radius:20px;
+  padding:8px 12px;
+  outline:none;
+  margin-bottom:10px;
+}
+
+.comments-section button{
+  background:#0a66c2;
+  border:none;
+  color:white;
+  border-radius:20px;
+  padding:6px 16px;
+  cursor:pointer;
+  font-weight:600;
+}
+
+.comments-section button:disabled{
+  background:#ccc;
+  cursor:not-allowed;
+}
+
+/* COMMENT LIST */
+
+.comments-list{
+  margin-top:10px;
+}

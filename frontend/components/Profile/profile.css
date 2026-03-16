@@ -1,0 +1,13 @@
+.profile{
+    width: 100vw;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.inner-profile{
+    padding-top: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 2vh;
+}

@@ -1,0 +1,28 @@
+body{
+  background: #f3f2ef;
+}
+
+.lmr{
+  max-width: 1128px;
+  margin: 24px auto;
+  display: grid;
+  grid-template-columns: 260px 555px 300px;
+  gap: 24px;
+  align-items: flex-start;
+}
+
+.lmr > :first-child{
+  position: sticky;
+  top: 80px;
+}
+
+/* FEED */
+.lmr > :nth-child(2){
+  width: 100%;
+}
+
+/* RIGHT SIDEBAR */
+.lmr > :last-child{
+  position: sticky;
+  top: 80px;
+}

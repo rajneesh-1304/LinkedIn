@@ -1,0 +1,51 @@
+.signin{
+  border-radius: 999px !important;
+  text-transform: none !important;
+  padding: 12px !important;
+  font-weight: 600 !important;
+  border: 1px solid #d0d0d0 !important;
+}
+
+.terms-text {
+  font-size: 10px;
+  color: #666;
+}
+
+.blue-link {
+  color: #0a66c2;
+  font-weight: 600;
+  font-size: 12px;
+  cursor: pointer;
+  margin-left: 4px;
+}
+
+.signin-btn {
+  border-radius: 999px !important;
+  text-transform: none !important;
+  background: #0a66c2 !important;
+  padding: 12px !important;
+  font-weight: 600 !important;
+  box-shadow: none !important;
+}
+
+.register_heading{
+  font-size: 24px;
+  font-weight: 900;
+  color: #212121;
+  text-align: left;
+  margin-bottom: 12px;
+}
+
+
+.terms-text {
+  font-size: 10px;
+  color: #666;
+}
+
+.blue-link {
+  color: #0a66c2;
+  font-weight: 600;
+  font-size: 12px;
+  cursor: pointer;
+  margin-left: 4px;
+}
