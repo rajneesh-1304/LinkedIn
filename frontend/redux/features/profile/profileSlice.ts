@@ -1,7 +1,8 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { addEducation, addExperience, addProfile, getEducation, getExperience, getProfile } from "./profileService";
+import { addEducation, addExperience, addProfile, fetchUsers, getEducation, getExperience, getProfile } from "./profileService";
 
 interface ProfileState {
+  users: any[];
   profile:any[];
   currentProfile: any ;
   currentEducation: any[];
@@ -11,6 +12,7 @@ interface ProfileState {
 }
 
 const initialState: ProfileState = {
+  users: [],
   profile:[],
   currentProfile: null,
   currentEducation: [],
@@ -84,6 +86,20 @@ export const getExperienceThunk = createAsyncThunk(
     }
   }
 )
+
+export const fetchUsersThunk = createAsyncThunk(
+  'users/fetchAll',
+  async (
+    { page, limit }: any,
+    { rejectWithValue }
+  ) => {
+    try {
+      return await fetchUsers({ page, limit, });
+    } catch (err: any) {
+      return rejectWithValue(err?.message || 'Failed to fetch questions');
+    }
+  }
+);
 
 
 
@@ -168,41 +184,13 @@ const profileSlice = createSlice({
         .addCase(getExperienceThunk.rejected, (state, action)=> {
             state.error = action.error.message || 'Experience fetching Failed';
         })
+        .addCase(fetchUsersThunk.fulfilled, (state, action) => {
+                const { user, page } = action.payload;
+                state.users = user;
+                state.loading = false;
+              })
 
 
-    //   .addCase(addAddressThunk.fulfilled, (state, action) => {
-    //     // state.currentAddress = action.payload;
-    //     state.loading = false;
-    //   })
-    //   .addCase(addAddressThunk.pending, (state) => {
-    //     state.loading = true;
-    //     state.error = null;
-    //   })
-    //   .addCase(addAddressThunk.rejected, (state, action) => {
-    //     state.error = action.error.message || "Add Address failed";
-    //   })
-    //   .addCase(getAddressThunk.fulfilled, (state, action) => {
-    //     state.currentAddress = action.payload;
-    //     state.loading = false;
-    //   })
-    //   .addCase(getAddressThunk.pending, (state) => {
-    //     state.loading = true;
-    //     state.error = null;
-    //   })
-    //   .addCase(getAddressThunk.rejected, (state, action) => {
-    //     state.error = action.error.message || "Add Address failed";
-    //   })
-    //   .addCase(getAllAddressThunk.fulfilled, (state, action) => {
-    //     state.address = action.payload;
-    //     state.loading = false;
-    //   })
-    //   .addCase(getAllAddressThunk.pending, (state) => {
-    //     state.loading = true;
-    //     state.error = null;
-    //   })
-    //   .addCase(getAllAddressThunk.rejected, (state, action) => {
-    //     state.error = action.error.message || "Add Address failed";
-    //   })
   },
 });
 

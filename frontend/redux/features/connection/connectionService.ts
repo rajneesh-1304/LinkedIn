@@ -66,3 +66,30 @@ export const getTotalConnection = async (id: string) => {
     throw error;
   }
 }
+
+
+export const getSuggesstionConnection = async (id: string) => {
+  try {
+    const url = `${BASE_URL}/connection/all/${id}`
+    const res = await privateApi.get(url, {
+        withCredentials: true,
+      },);
+    return res.data;
+  } catch (error) {
+    console.error("Error in fetching connection:", error);
+    throw error;
+  }
+}
+
+export const getPendingConnection = async (id: string) => {
+  try {
+    const url = `${BASE_URL}/connection/pending/${id}`
+    const res = await privateApi.get(url, {
+        withCredentials: true,
+      },);
+    return res.data;
+  } catch (error) {
+    console.error("Error in fetching connection:", error);
+    throw error;
+  }
+}

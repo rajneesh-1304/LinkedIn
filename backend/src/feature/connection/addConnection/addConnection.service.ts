@@ -3,44 +3,57 @@ import {
   ConflictException,
   Injectable,
   NotFoundException,
-  UnauthorizedException,
 } from '@nestjs/common';
-import { Connection } from 'src/domain/entity/connection.entity';
-import { User } from 'src/domain/entity/user.entity';
 import { DataSource } from 'typeorm';
+import { User } from 'src/domain/entity/user.entity';
+import { Connection, ConnectionStatus } from 'src/domain/entity/connection.entity';
 
 @Injectable()
 export class AddConnectionService {
-  constructor(private readonly dataSource: DataSource) { }
+  constructor(private readonly dataSource: DataSource) {}
 
-  async addConnection(id: string, userId: string) {
+  async addConnection(requesterId: string, userId: string) {
+    if (!userId || !requesterId) {
+      throw new BadRequestException('User ID or Requester ID is missing');
+    }
+
+    if (userId === requesterId) {
+      throw new BadRequestException("You can't connect with yourself");
+    }
+
     const userRepo = this.dataSource.getRepository(User);
     const connectionRepo = this.dataSource.getRepository(Connection);
-    if (!id || !userId) {
-      throw new BadRequestException('User is missing');
-    }
-    const requester = await userRepo.findOne({ where: { id: id } });
-    if (!requester) {
-      throw new NotFoundException('Requesting user not found');
-    }
-    const user = await userRepo.findOne({ where: { id: userId } });
-    if (!user) {
-      throw new NotFoundException('User not found');
-    }
-    const isPresent = await connectionRepo.findOne({ where: { userId: userId, requesterId: id } });
-    if (isPresent) {
-      throw new ConflictException('Already present Connection');
-    }
-    const connection = connectionRepo.create({
-      userId: userId,
-      requesterId: id,
-      user,
-      requester
-    })
-    await connectionRepo.save(connection);
-    return {
-      message: `Connection request sent to ${requester.firstName}`
-    }
-  }
 
+    const [user, requester] = await Promise.all([
+      userRepo.findOne({ where: { id: userId } }),
+      userRepo.findOne({ where: { id: requesterId } }),
+    ]);
+
+    if (!user) throw new NotFoundException('User not found');
+    if (!requester) throw new NotFoundException('Requester not found');
+
+    const existingConnection = await connectionRepo.findOne({
+      where: [
+        { user: { id: userId }, requester: { id: requesterId } },
+        { user: { id: requesterId }, requester: { id: userId } },
+      ],
+    });
+
+    if (existingConnection) {
+      throw new ConflictException('Connection already exists or is pending');
+    }
+
+    const connection = connectionRepo.create({
+      user,
+      requester,
+      status: ConnectionStatus.PENDING,
+    });
+
+    await connectionRepo.save(connection);
+
+    return {
+      message: `${requester.firstName} sent a connection request to ${user.firstName}`,
+      connectionId: connection.id,
+    };
+  }
 }

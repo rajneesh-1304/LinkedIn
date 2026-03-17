@@ -8,98 +8,45 @@ import SuggestionCard from "../../components/networks/suggestion/SuggestionCard"
 import LinkedInNavbar from "@/components/Navbar/Navbar";
 import { Box, Paper, Avatar, Typography, Button } from "@mui/material";
 import "./network.css";
-import { fetchUsersThunk } from "@/redux/features/users/userSlice";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
-
+import { getPendingConnectionThunk, getSuggestionConnectionThunk, removeConnectionThunk, updateConnectionThunk } from "@/redux/features/connection/connectionSlice";
+import { TrackChanges } from "@mui/icons-material";
 
 export default function MyNetworkPage() {
 
-  const users= useAppSelector(state=> state.users.users);
+  const users = useAppSelector(state => state.connection.suggesstionConnection);
+  const pendingRequest = useAppSelector(state => state.connection.pendingConnection);
   const [requests, setRequests] = useState([]);
   const dispatch = useAppDispatch();
-
+  const currentUser = useAppSelector(state => state.users.currentUser);
+  const id = currentUser?.id;
   useEffect(() => {
     loadData();
   }, []);
 
   const loadData = async () => {
-    dispatch(fetchUsersThunk({}));
+    dispatch(getSuggestionConnectionThunk({ id }));
+    dispatch(getPendingConnectionThunk({ id }));
   }
 
-  // REMOVE CARD (❌ button)
-  // const removeUser = (id: string) => {
-  //   setUsers((prev) => prev.filter((user) => user.id !== id));
-  // };
+  const acceptRequest = async (userId: string) => {
+    try {
+      await dispatch(updateConnectionThunk({ id, userId })).unwrap();
+      dispatch(getPendingConnectionThunk({ id }));
+    } catch (error) {
+      console.log(error);
+    }
+  }
 
-  // ACCEPT CONNECTION
-  // const acceptRequest = async (connectionId: string) => {
-  //   try {
+  const rejectRequest = async (userId: string) => {
+    try {
+      await dispatch(removeConnectionThunk({ id, userId })).unwrap();
+      dispatch(getPendingConnectionThunk({ id }));
+    } catch (error) {
+      console.log(error);
+    }
+  }
 
-  //     const req = requests.find((r) => r.id === connectionId);
-
-  //     await axios.post(
-  //       `${API}/connections/accept/${connectionId}`,
-  //       {},
-  //       { withCredentials: true }
-  //     );
-
-  //     // remove invitation
-  //     setRequests((prev) =>
-  //       prev.filter((r) => r.id !== connectionId)
-  //     );
-
-  //     // remove suggestion card
-  //     if (req) {
-  //       setUsers((prev) =>
-  //         prev.filter((user) => user.id !== req.sender.id)
-  //       );
-  //     }
-
-  //   } catch (error) {
-  //     console.error("Accept request failed:", error);
-  //   }
-  // };
-
-  // // REJECT CONNECTION
-  // const rejectRequest = async (connectionId: string) => {
-  //   try {
-
-  //     const req = requests.find((r) => r.id === connectionId);
-
-  //     await axios.post(
-  //       `${API}/connections/reject/${connectionId}`,
-  //       {},
-  //       { withCredentials: true }
-  //     );
-
-  //     // remove invitation
-  //     setRequests((prev) =>
-  //       prev.filter((r) => r.id !== connectionId)
-  //     );
-
-  //     // add user back to suggestions
-  //     if (req) {
-  //       setUsers((prev) => {
-
-  //         const exists = prev.some(
-  //           (user) => user.id === req.sender.id
-  //         );
-
-  //         if (exists) return prev;
-
-  //         return [...prev, req.sender];
-
-  //       });
-  //     }
-
-  //   } catch (error) {
-  //     console.error("Reject request failed:", error);
-  //   }
-  // };
-
-  // if (loading) {
-  //   return <div className="network-loading">Loading network...</div>;
-  // }
 
   return (
     <div className="my-network-wrapper">
@@ -114,14 +61,14 @@ export default function MyNetworkPage() {
 
         <main className="main-column">
 
-          {requests.length > 0 && (
+          {pendingRequest.length > 0 && (
             <Paper className="suggestion-section">
 
               <div className="suggestion-header">
                 <h3>Invitations</h3>
               </div>
 
-              {requests.map((req) => (
+              {pendingRequest.map((req) => (
 
                 <Box
                   key={req.id}
@@ -135,17 +82,13 @@ export default function MyNetworkPage() {
                 >
 
                   <Avatar
-                    // src={
-                    //   req.sender.profilePicture
-                    //     ? backendUrl + req.sender.profilePicture
-                    //     : "/default-avatar.png"
-                    // }
+                    src={req.profilePicture}
                   />
 
                   <Box sx={{ flex: 1 }}>
 
                     <Typography sx={{ fontWeight: 600 }}>
-                      {/* {req.sender.firstName} {req.sender.lastName} */}
+                      {req.firstName} {req.lastName}
                     </Typography>
 
                     <Typography
@@ -154,21 +97,21 @@ export default function MyNetworkPage() {
                         color: "#666",
                       }}
                     >
-                      {/* {req.sender.headline} */}
+                      {req.headline}
                     </Typography>
 
                   </Box>
 
                   <Button
                     variant="outlined"
-                    // onClick={() => rejectRequest(req.id)}
+                    onClick={() => rejectRequest(req.id)}
                   >
                     Ignore
                   </Button>
 
                   <Button
                     variant="contained"
-                    // onClick={() => acceptRequest(req.id)}
+                    onClick={() => acceptRequest(req.id)}
                   >
                     Accept
                   </Button>
@@ -179,7 +122,6 @@ export default function MyNetworkPage() {
             </Paper>
           )}
 
-          {/* SUGGESTIONS */}
           <div className="suggestion-section">
 
             <div className="suggestion-header">
@@ -196,11 +138,11 @@ export default function MyNetworkPage() {
 
               ) : (
 
-                users.map((user) => (
+                users.filter((user) => user.id !== currentUser?.id).map((user) => (
                   <SuggestionCard
                     key={user.id}
                     user={user}
-                    // onRemove={removeUser}
+                  // onRemove={removeUser}
                   />
                 ))
 

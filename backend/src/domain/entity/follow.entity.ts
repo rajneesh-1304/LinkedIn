@@ -10,16 +10,10 @@ export class Follow {
     @JoinColumn({ name: 'userId' })
     user: User;
 
-    @Column()
-    userId: string;
-
     @ManyToOne(() => User, (user) => user.following, { onDelete: 'CASCADE' })
     @JoinColumn({ name: 'followerId' })
     follower: User;
-
-    @Column()
-    followerId: string;
-
+    
     @CreateDateColumn()
     createdAt: Date;
 }

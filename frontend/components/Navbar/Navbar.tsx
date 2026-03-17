@@ -34,6 +34,7 @@ export default function Navbar() {
   const router = useRouter();
   const dispatch = useAppDispatch();
   const currentUser = useAppSelector((state) => state.users.currentUser);
+  const currentProfile = useAppSelector(state => state.profile.currentProfile);
 
   const [anchorEl, setAnchorEl] = useState<HTMLDivElement | null>(null);
   const open = Boolean(anchorEl);
@@ -149,11 +150,11 @@ export default function Navbar() {
 
                 <div className="li-menu-header">
 
-                  <Avatar className="li-menu-avatar" src={currentUser?.profilePicture} />
+                  <Avatar className="li-menu-avatar" src={currentProfile?.profilePicture} />
 
                   <div>
                     <Typography className="li-menu-name">
-                      {currentUser?.firstName || "User"}
+                      {currentProfile?.firstName || "User"}
                     </Typography>
 
                     <Typography className="li-menu-headline">

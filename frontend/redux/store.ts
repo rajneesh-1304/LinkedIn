@@ -18,6 +18,7 @@ import profileReducer from './features/profile/profileSlice';
 import postReducer from './features/post/postSlice';
 import connectionReducer from './features/connection/connectionSlice';
 import followingReducer from './features/following/followingSlice';
+import notificationReducer from './features/notifications/notificationSlice';
 import { injectStore } from "@/components/privateApi";
 
 const persistConfig = {
@@ -34,6 +35,7 @@ const rootReducer = combineReducers({
   post: postReducer,
   connection: connectionReducer,
   following: followingReducer,
+  notifications: notificationReducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

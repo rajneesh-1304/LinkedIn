@@ -11,6 +11,8 @@ import {
   Button,
   IconButton,
   Paper,
+  Snackbar,
+  Alert,
 } from "@mui/material";
 
 import CloseIcon from "@mui/icons-material/Close";
@@ -49,6 +51,10 @@ export default function SuggestionCard({ user, onRemove }: SuggestionCardProps) 
   const [requested, setRequested] = useState(false);
   const [followersCount, setFollowersCount] = useState(user.followersCount || 0);
 
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [snackbarSeverity, setSnackbarSeverity] = useState<"success" | "error">("success");
+
   const currentUserId = currentUser?.id;
   const userId = user.id;
 
@@ -66,7 +72,7 @@ export default function SuggestionCard({ user, onRemove }: SuggestionCardProps) 
     if (!currentUserId || !userId) return;
     try {
       const res = await dispatch(checkConnectionThunk({ id: currentUserId, userId }));
-      if (res?.payload?.status === "PENDING") setRequested(true);
+      if (res?.payload === "PENDING") setRequested(true);
       else setRequested(false);
     } catch (err) {
       console.error("Connection status error:", err);
@@ -78,16 +84,25 @@ export default function SuggestionCard({ user, onRemove }: SuggestionCardProps) 
 
     try {
       if (followed) {
-        await dispatch(removeFollowingThunk({ id: currentUserId, userId }));
+        await dispatch(removeFollowingThunk({ id: currentUserId, userId })).unwrap();
         setFollowed(false);
         setFollowersCount((prev) => Math.max(prev - 1, 0));
+        setSnackbarMessage("Unfollowed successfully");
+        setSnackbarSeverity("success");
       } else {
-        await dispatch(addFollowingThunk({ id: currentUserId, userId }));
+        await dispatch(addFollowingThunk({ id: currentUserId, userId })).unwrap();
         setFollowed(true);
         setFollowersCount((prev) => prev + 1);
+        setSnackbarMessage("Followed successfully");
+        setSnackbarSeverity("success");
       }
+      setSnackbarOpen(true);
     } catch (err) {
+      setFollowed(false);
       console.error("Follow toggle error:", err);
+      setSnackbarMessage("Something went wrong");
+      setSnackbarSeverity("error");
+      setSnackbarOpen(true);
     }
   };
 
@@ -95,10 +110,17 @@ export default function SuggestionCard({ user, onRemove }: SuggestionCardProps) 
     if (!currentUserId || !userId) return;
 
     try {
-      await dispatch(addConnectionThunk({ id: currentUserId, userId }));
+      await dispatch(addConnectionThunk({ id: currentUserId, userId })).unwrap();
       setRequested(true);
+      setSnackbarMessage("Connection request sent");
+      setSnackbarSeverity("success");
+      setSnackbarOpen(true);
     } catch (err) {
+      setRequested(false);
       console.error("Connection toggle error:", err);
+      setSnackbarMessage("Failed to send request");
+      setSnackbarSeverity("error");
+      setSnackbarOpen(true);
     }
   };
 
@@ -147,10 +169,6 @@ export default function SuggestionCard({ user, onRemove }: SuggestionCardProps) 
           </Typography>
         )}
 
-        {/* <Typography fontSize={12} color="text.secondary" sx={{ mt: 1 }}>
-          {followersCount} follower{followersCount !== 1 ? "s" : ""}
-        </Typography> */}
-
         <Button
           startIcon={!followed ? <AddIcon /> : undefined}
           variant={followed ? "contained" : "outlined"}
@@ -177,11 +195,28 @@ export default function SuggestionCard({ user, onRemove }: SuggestionCardProps) 
             backgroundColor: requested ? "#1282f3" : "transparent",
             color: requested ? "#fff" : "#1282f3",
           }}
-          onClick={handleConnectToggle}
+          onClick={() => {
+            if (requested) return;
+            handleConnectToggle();
+          }}
         >
           {requested ? "Pending" : "Connect"}
         </Button>
       </Box>
+
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={3000}
+        onClose={() => setSnackbarOpen(false)}
+      >
+        <Alert
+          onClose={() => setSnackbarOpen(false)}
+          severity={snackbarSeverity}
+          sx={{ width: "100%" }}
+        >
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
     </Paper>
   );
 }

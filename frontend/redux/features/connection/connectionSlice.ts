@@ -1,8 +1,10 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { addConnection, checkConnection, getTotalConnection, removeConnection, updateConnection } from "./connectionService";
+import { addConnection, checkConnection, getPendingConnection, getSuggesstionConnection, getTotalConnection, removeConnection, updateConnection } from "./connectionService";
 
 interface ConnectionState {
   connection:any[];
+  suggesstionConnection: any[],
+  pendingConnection: any[],
   totalConnection: 0;
   loading: boolean;
   error: string | null;
@@ -10,6 +12,8 @@ interface ConnectionState {
 
 const initialState: ConnectionState = {
   connection:[],
+  suggesstionConnection: [],
+  pendingConnection: [],
   totalConnection:0,
   loading: false,
   error: null,
@@ -52,7 +56,6 @@ export const checkConnectionThunk = createAsyncThunk(
   "connection/check",
   async ({id, userId}:any, { rejectWithValue }) => {
     try {
-      console.log(id, userId, 'hi i am thisfdlasd');
       return await checkConnection(id, userId);
     } catch (err: any) {
       return rejectWithValue(err.response);
@@ -65,6 +68,28 @@ export const getTotalConnectionThunk = createAsyncThunk(
   async ({id}:any, { rejectWithValue }) => {
     try {
       return await getTotalConnection(id);
+    } catch (err: any) {
+      return rejectWithValue(err.response);
+    }
+  }
+);
+
+export const getSuggestionConnectionThunk = createAsyncThunk(
+  "connection/getsuggestion",
+  async ({id}:any, { rejectWithValue }) => {
+    try {
+      return await getSuggesstionConnection(id);
+    } catch (err: any) {
+      return rejectWithValue(err.response);
+    }
+  }
+);
+
+export const getPendingConnectionThunk = createAsyncThunk(
+  "connection/getpending",
+  async ({id}:any, { rejectWithValue }) => {
+    try {
+      return await getPendingConnection(id);
     } catch (err: any) {
       return rejectWithValue(err.response);
     }
@@ -121,6 +146,30 @@ const connectionSlice = createSlice({
             state.error=null;
         })
         .addCase(getTotalConnectionThunk.rejected, (state, action)=> {
+            state.error = action.error.message || 'Failed updating connection';
+        })
+
+        .addCase(getSuggestionConnectionThunk.fulfilled, (state, action)=>{
+          state.suggesstionConnection = action.payload.users;
+            state.loading = false;
+        })
+        .addCase(getSuggestionConnectionThunk.pending, (state)=>{
+            state.loading=true;
+            state.error=null;
+        })
+        .addCase(getSuggestionConnectionThunk.rejected, (state, action)=> {
+            state.error = action.error.message || 'Failed updating connection';
+        })
+
+        .addCase(getPendingConnectionThunk.fulfilled, (state, action)=>{
+          state.pendingConnection = action.payload.users;
+            state.loading = false;
+        })
+        .addCase(getPendingConnectionThunk.pending, (state)=>{
+            state.loading=true;
+            state.error=null;
+        })
+        .addCase(getPendingConnectionThunk.rejected, (state, action)=> {
             state.error = action.error.message || 'Failed updating connection';
         })
   },

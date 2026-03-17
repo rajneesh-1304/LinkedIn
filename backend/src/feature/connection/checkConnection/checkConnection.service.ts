@@ -5,7 +5,7 @@ import {
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
-import { Connection } from 'src/domain/entity/connection.entity';
+import { Connection, ConnectionStatus } from 'src/domain/entity/connection.entity';
 import { User } from 'src/domain/entity/user.entity';
 import { DataSource } from 'typeorm';
 
@@ -13,28 +13,35 @@ import { DataSource } from 'typeorm';
 export class CheckConnectionService {
   constructor(private readonly dataSource: DataSource) { }
 
-  async checkConnection(id: string, userId: string) {
+  async checkConnection(userId: string, otherUserId: string) {
+    if (!userId || !otherUserId) {
+      throw new BadRequestException('User Ids are requested');
+    }
+    console.log(userId, otherUserId, 'hdfkalsdlfa;sdmnfl')
     const userRepo = this.dataSource.getRepository(User);
     const connectionRepo = this.dataSource.getRepository(Connection);
-    if (!id || !userId) {
-      throw new BadRequestException('User is missing');
-    }
-    const requester = await userRepo.findOne({ where: { id: id } });
-    if (!requester) {
-      throw new NotFoundException('Requested user not found');
-    }
-    const user = await userRepo.findOne({ where: { id: userId } });
+
+    const [user, otherUser] = await Promise.all([
+      userRepo.findOne({ where: { id: userId } }),
+      userRepo.findOne({ where: { id: otherUserId } }),
+    ]);
+
     if (!user) {
-      throw new NotFoundException('User not found');
+      throw new NotFoundException("User not found");
     }
-    const isPresent = await connectionRepo.findOne({ where: { userId: userId, requesterId: id } });
-    if (!isPresent) {
-      return {
-        status: 'NONE'
-      }
+    if (!otherUser) {
+      throw new NotFoundException("Other user not found");
     }
-    return {
-      status: isPresent.status,
+
+    const connection = await connectionRepo.findOne({
+      where: [
+        {user: {id: userId}, requester: {id:otherUserId}},
+        { user: { id: otherUserId }, requester: { id: userId },},
+      ]
+    })
+    if(!connection){
+      return 'NONE';
     }
+    return connection.status;
   }
 }

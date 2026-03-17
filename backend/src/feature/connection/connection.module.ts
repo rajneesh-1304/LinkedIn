@@ -1,13 +1,44 @@
 import { Module } from '@nestjs/common';
-import { AddConnectionModule } from './addConnection/addConnection.module';
-import { RemoveConnectionModule } from './removeConnection/removeConnection.module';
-import { UpdateConnectionModule } from './updateConnection/updateConnection.module';
-import { CheckConnectionModule } from './checkConnection/checkConnection.module';
-import { TotalConnectionModule } from './getTotal/getTotal.module';
+import { User } from 'src/domain/entity/user.entity';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { AddConnectionController } from './addConnection/addConnection.controller';
+import { CheckConnectionController } from './checkConnection/checkConnection.controller';
+import { RemoveConnectionController } from './removeConnection/removeConnection.controller';
+import { UpdateConnectionController } from './updateConnection/updateConnection.controller';
+import { TotalConnectionController } from './getTotal/getTotal.controller';
+import { AddConnectionService } from './addConnection/addConnection.service';
+import { CheckConnectionService } from './checkConnection/checkConnection.service';
+import { RemoveConnectionService } from './removeConnection/removeConnection.service';
+import { UpdateConnectionService } from './updateConnection/updateConnection.service';
+import { TotalConnectionService } from './getTotal/getTotal.service';
+import { GetTotalConnectionController } from './getSuggestion/getPendingConnection';
+import { GetConnectionService } from './getSuggestion/getPendingService';
+import { GetPendingConnectionController } from './getPendingConnection/getPendingConnection';
+import { GetPendingConnectionService } from './getPendingConnection/getPendingService';
+import { PublisherService } from 'src/infra/rabbitMq/publisher';
+import { RabbitConnection } from 'src/infra/rabbitMq/rabbit.connection';
 
 @Module({
-  imports: [AddConnectionModule, RemoveConnectionModule, UpdateConnectionModule, CheckConnectionModule, TotalConnectionModule],
-  controllers: [],
-  providers: [],
+  imports: [TypeOrmModule.forFeature([User]), ],
+  controllers: [
+    AddConnectionController,
+    CheckConnectionController,
+    RemoveConnectionController,
+    UpdateConnectionController,
+    TotalConnectionController,
+    GetTotalConnectionController,
+    GetPendingConnectionController
+  ],
+  providers: [
+    AddConnectionService,
+    CheckConnectionService,
+    RemoveConnectionService,
+    UpdateConnectionService,
+    TotalConnectionService,
+    GetConnectionService,
+    GetPendingConnectionService,
+    PublisherService,
+    RabbitConnection
+  ],
 })
 export class ConnectionModule {}

@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
-import { deleteUserr, fetchUsers, loginUser, registerUser } from "./service";
+import { deleteUserr, loginUser, registerUser } from "./service";
 
 interface User {
   id: number;
@@ -8,14 +8,12 @@ interface User {
 }
 
 interface UserState {
-  users: any[];
   currentUser: User | null;
   loading: boolean;
   error: string | null;
 }
 
 const initialState: UserState = {
-  users: [],
   currentUser: null,
   loading: false,
   error: null,
@@ -32,19 +30,6 @@ export const registerThunk = createAsyncThunk(
   }
 );
 
-export const fetchUsersThunk = createAsyncThunk(
-  'users/fetchAll',
-  async (
-    { page, limit }: any,
-    { rejectWithValue }
-  ) => {
-    try {
-      return await fetchUsers({ page, limit, });
-    } catch (err: any) {
-      return rejectWithValue(err?.message || 'Failed to fetch questions');
-    }
-  }
-);
 
 export const loginThunk = createAsyncThunk(
   "auth",
@@ -87,11 +72,7 @@ const usersSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      .addCase(fetchUsersThunk.fulfilled, (state, action) => {
-        const { user, page } = action.payload;
-        state.users = user;
-        state.loading = false;
-      })
+      
       .addCase(registerThunk.pending, (state) => {
         state.loading = true;
         state.error = null;

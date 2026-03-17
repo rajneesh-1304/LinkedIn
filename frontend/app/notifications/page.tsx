@@ -16,6 +16,8 @@ import { useState, useEffect } from "react";
 import Navbar from "../../components/Navbar/Navbar";
 import LeftSidebar from "../../components/Home/LeftSide/Leftside";
 import RightSidebar from "@/components/Home/RightSide/Rightside";
+import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+import { getNotificationThunk } from "@/redux/features/notifications/notificationSlice";
 
 
 interface Notification {
@@ -32,8 +34,15 @@ interface Notification {
 export default function Notifications() {
 
   const [filter, setFilter] = useState("all");
+  const dispatch = useAppDispatch();
+  const currentUser = useAppSelector(state => state.users.currentUser);
+  const userId =currentUser?.id;
   const [notifications, setNotifications] = useState<Notification[]>([]);
-
+  const noti = useAppSelector(state => state.notifications.notifications);
+  console.log(noti, ' hello i am notifications ');
+  useEffect(()=>{
+    dispatch(getNotificationThunk({userId}));
+  },[]);
   const handleChange = (
     event: React.MouseEvent<HTMLElement>,
     newFilter: string
@@ -82,7 +91,7 @@ export default function Notifications() {
 
           </Paper>
 
-          {notifications.length === 0 ? (
+          {noti.length === 0 ? (
 
             <Paper
               sx={{
@@ -95,7 +104,7 @@ export default function Notifications() {
 
           ) : (
 
-            notifications.map((notification) => (
+            noti.map((notification) => (
 
               <Paper
                 key={notification.id}
@@ -109,11 +118,11 @@ export default function Notifications() {
               >
 
                 <Avatar
-                  src={
-                    notification.sender?.profilePicture
-                      ? backendUrl + notification.sender.profilePicture
-                      : undefined
-                  }
+                  // src={
+                  //   notification.sender?.profilePicture
+                  //     ? backendUrl + notification.sender.profilePicture
+                  //     : undefined
+                  // }
                 />
 
                 <Box>
@@ -121,8 +130,9 @@ export default function Notifications() {
                   <Typography>
 
                     <strong>
-                      {notification.sender?.firstName}{" "}
-                      {notification.sender?.lastName}
+                      {/* {notification.sender?.firstName}{" "}
+                      {notification.sender?.lastName} */}
+                      {notification.senderId}
                     </strong>{" "}
                     {notification.message}
 

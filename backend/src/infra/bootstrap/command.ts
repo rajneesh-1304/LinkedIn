@@ -1,16 +1,17 @@
 import { Command, CommandRunner, Option } from 'nest-commander';
+import { ConsumerService } from '../rabbitMq/consumer';
 
 @Command({ name: 'sayHello', options: { isDefault: true } })
 export class PublishCommand extends CommandRunner {
 
   constructor(
-    // private readonly consumer: ConsumerService,
+    private readonly consumer: ConsumerService,
   ) {
     super();
   }
 
 
   async run(inputs: string[], options?: Record<string, any>): Promise<void> {
-    // await this.consumer.shipment();
+    await this.consumer.infoPost();
   }
 }

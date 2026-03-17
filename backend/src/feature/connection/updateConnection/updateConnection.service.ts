@@ -1,40 +1,56 @@
 import {
   BadRequestException,
-  ConflictException,
   Injectable,
   NotFoundException,
-  UnauthorizedException,
 } from '@nestjs/common';
 import { Connection, ConnectionStatus } from 'src/domain/entity/connection.entity';
 import { User } from 'src/domain/entity/user.entity';
+import { PublisherService } from 'src/infra/rabbitMq/publisher';
 import { DataSource } from 'typeorm';
 
 @Injectable()
 export class UpdateConnectionService {
-  constructor(private readonly dataSource: DataSource) { }
+  constructor(private readonly dataSource: DataSource, private readonly publishService: PublisherService) {}
 
-  async updateConnection(id: string, userId: string) {
-    const userRepo = this.dataSource.getRepository(User);
-    const connectionRepo = this.dataSource.getRepository(Connection);
-    if (!id || !userId) {
+  async updateConnection(userId: string, otherUserId: string) {
+    if (!userId || !otherUserId) {
       throw new BadRequestException('User is missing');
     }
-    const requester = await userRepo.findOne({ where: { id: userId } });
-    if (!requester) {
-      throw new NotFoundException('Requesting user not found');
-    }
-    const user = await userRepo.findOne({ where: { id } });
-    if (!user) {
-      throw new NotFoundException('User not found');
-    }
-    const isPresent = await connectionRepo.findOne({ where: { userId: userId, requesterId: id } });
-    if (!isPresent) {
+
+    const userRepo = this.dataSource.getRepository(User);
+    const connectionRepo = this.dataSource.getRepository(Connection);
+
+    const [user, otherUser] = await Promise.all([
+      userRepo.findOne({ where: { id: userId } }),
+      userRepo.findOne({ where: { id: otherUserId } }),
+    ]);
+
+    if (!user) throw new NotFoundException('User not found');
+    if (!otherUser) throw new NotFoundException('Other user not found');
+
+    const connection = await connectionRepo.findOne({
+      where: [
+        { user: { id: userId }, requester: { id: otherUserId }, status: ConnectionStatus.PENDING },
+        { user: { id: otherUserId }, requester: { id: userId }, status: ConnectionStatus.PENDING },
+      ],
+    });
+
+    if (!connection) {
       throw new NotFoundException('Connection not found');
     }
-    await connectionRepo.update({id: isPresent.id},{status: ConnectionStatus.CONNECTED});
-    return {
-      message: `${user.firstName} accepted request of ${requester.firstName}`,
-    }
-  }
 
+    connection.status = ConnectionStatus.CONNECTED;
+    await connectionRepo.save(connection);
+    this.publishService.publish({
+      senderId: userId,
+      receiverId: otherUserId,
+      type: 'REQUEST_ACCEPTED',
+      message: `${otherUser.firstName} accepted request.`
+      
+    })
+
+    return {
+      message: `${user.firstName} accepted request of ${otherUser.firstName}`,
+    };
+  }
 }

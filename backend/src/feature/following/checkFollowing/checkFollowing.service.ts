@@ -13,24 +13,30 @@ import { DataSource } from 'typeorm';
 export class CheckFollowingService {
   constructor(private readonly dataSource: DataSource) { }
 
-  async checkFollowing(id: string, userId: string) {
-      const userRepo = this.dataSource.getRepository(User);
-      const followRepo =this.dataSource.getRepository(Follow);
-      if(!id || !userId){
-        throw new BadRequestException('User is missing');
-      }
-      const user = await userRepo.findOne({where: {id: userId}});
-      if(!user){
-        throw new NotFoundException('User not found');
-      }
-      const follower = await userRepo.findOne({where: {id: id}});
-      if(!follower){
-        throw new NotFoundException('Follower not found');
-      }
-      const isPresent = await followRepo.findOne({where: {userId: userId, followerId: id}});
-      if(isPresent){
-        return true;
-      }
-      return false;
+  async checkFollowing(otherUserId: string, userId: string) {
+    if (!userId || !otherUserId) {
+      throw new BadRequestException('User Ids are requested');
     }
+    const userRepo = this.dataSource.getRepository(User);
+    const followRepo = this.dataSource.getRepository(Follow);
+
+    const [user, otherUser] = await Promise.all([
+      userRepo.findOne({where: {id: userId}}),
+      userRepo.findOne({where: {id: otherUserId}}),
+    ]);
+    
+    if(!user){
+      throw new NotFoundException("User not found");
+    }
+    if(!otherUser){
+      throw new NotFoundException("Other user not found");
+    }
+
+    const follow = await followRepo.findOne({
+      where: [
+        {user: {id: userId}, follower: {id:otherUserId}}
+      ]
+    });
+    return !!follow;
+  }
 }

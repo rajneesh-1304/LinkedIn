@@ -12,25 +12,26 @@ import { DataSource } from 'typeorm';
 export class RemoveFollowService {
   constructor(private readonly dataSource: DataSource) {}
 
-  async removeFollowing(id: string, userId: string) {
-    if (!id || !userId) {
-      throw new BadRequestException('User is missing');
+  async removeFollowing(followerId: string,  userId:string) {
+    if (!userId || !followerId) {
+      throw new BadRequestException('User IDs are required');
     }
 
     const userRepo = this.dataSource.getRepository(User);
     const followRepo = this.dataSource.getRepository(Follow);
 
-    const user = await userRepo.findOne({ where: { id: userId } });
-    if (!user) {
-      throw new NotFoundException('User not found');
-    }
+    const [user, follower] = await Promise.all([
+      userRepo.findOne({ where: { id: userId } }),
+      userRepo.findOne({ where: { id: followerId } }),
+    ]);
 
-    const follower = await userRepo.findOne({ where: { id: id } });
-    if (!follower) {
-      throw new NotFoundException('Follower not found');
-    }
+    if (!user) throw new NotFoundException('User not found');
+    if (!follower) throw new NotFoundException('Follower not found');
 
-    const followRecord = await followRepo.findOne({ where: { userId: userId, followerId: id } });
+    const followRecord = await followRepo.findOne({
+      where: { user:{id: userId}, follower: {id: followerId} },
+    });
+
     if (!followRecord) {
       throw new ConflictException('Not present in follower list');
     }

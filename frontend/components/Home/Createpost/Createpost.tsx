@@ -5,13 +5,12 @@ import Post from '@/components/PostModal/Post';
 import PostCard from '@/components/PostCard/PostCard';
 import { fetchPostThunk } from '@/redux/features/post/postSlice';
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
-import { fetchUsersThunk } from '@/redux/features/users/userSlice';
-import { addProfileThunk } from '@/redux/features/profile/profileSlice';
+import { fetchUsersThunk } from '@/redux/features/profile/profileSlice';
 
 const Createpost = () => {
   const [isOpen, setIsOpen] = useState(false);
   const posts = useAppSelector(state => state.post.posts);
-  const users = useAppSelector(state => state.users.users);
+  const users = useAppSelector(state => state.profile.users);
   const dispatch = useAppDispatch();
   const currentUser = useAppSelector(state => state.users.currentUser);
   const id: any = currentUser?.id;

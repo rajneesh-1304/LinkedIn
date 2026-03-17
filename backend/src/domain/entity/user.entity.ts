@@ -1,4 +1,4 @@
-import { Column, CreateDateColumn, Entity, JoinTable, ManyToMany, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, JoinTable, ManyToMany, OneToMany, PrimaryColumn, PrimaryGeneratedColumn } from "typeorm";
 import { Education } from "./education.entity";
 import { Experience } from "./experience.entity";
 import { Follow } from "./follow.entity";
@@ -6,11 +6,8 @@ import { Connection } from "./connection.entity";
 
 @Entity('users')
 export class User {
-    @PrimaryGeneratedColumn('uuid')
+    @PrimaryColumn('uuid')
     id: string;
-
-    @Column()
-    email: string;
 
     @Column()
     firstName: string;

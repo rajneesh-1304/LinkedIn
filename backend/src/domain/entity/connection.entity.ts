@@ -22,15 +22,9 @@ export class Connection {
   @JoinColumn({ name: "userId" })
   user: User;
 
-  @Column()
-  userId: string;
-
   @ManyToOne(() => User, (user) => user.sentConnections, { onDelete: "CASCADE" })
   @JoinColumn({ name: "requesterId" })
   requester: User;
-
-  @Column()
-  requesterId: string;
 
   @Column({
     type: "enum",

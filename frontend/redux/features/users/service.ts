@@ -43,20 +43,7 @@ export const registerUser = async (registerData: any) => {
   }
 }
 
-export const fetchUsers = async ({page, limit}: any)=>{
-  try {
-    const res = await privateApi.get(`${BASE_URL}/profile/getAll`, {
-      params: {
-        page,
-        limit,
-      },
-    })
-    return res.data;
-  } catch (err: any) {
-    console.error('Error fetching users:', err);
-    throw err?.response?.data || err.message;
-  }
-}
+
 
 export const deleteUserr = async (id: any) => {
   try {

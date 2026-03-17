@@ -6,9 +6,10 @@ import { LoginController } from './login/login.controller';
 import { LoginService } from './login/login.service';
 import { RegisterController } from './register/register.controller';
 import { RegisterService } from './register/register.service';
+import { PublisherService } from 'src/infra/rabbitMq/publisher';
 @Module({
   imports: [TypeOrmModule.forFeature([User])],
   controllers: [LoginController, RegisterController],
-  providers: [LoginService, RegisterService, RabbitConnection],
+  providers: [LoginService, RegisterService, RabbitConnection, PublisherService],
 })
 export class UserModule {}

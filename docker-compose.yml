@@ -80,6 +80,28 @@ services:
       - ./backend:/app
       - /app/node_modules
 
+  notifications:
+    build:
+      context: ./notifications
+      dockerfile: Dockerfile
+    container_name: notifications-Linkedin
+    restart: always
+    ports:
+      - "3004:3004"
+    depends_on:
+      - db
+    environment:
+      PORT: ${PORT4}
+      DB_HOST: ${DB_HOST}
+      DB_PORT: ${DB_PORT}
+      DB_USER: ${DB_USER}
+      DB_PASS: ${DB_PASS}
+      DB_NAME: ${DB_NAME4}
+      RABBITMQ_URL: ${RABBITMQ_URL}
+    volumes:
+      - ./notifications:/app
+      - /app/node_modules
+
   post-backend:
     build:
       context: ./post-backend
