@@ -19,7 +19,6 @@ export class GetPendingConnectionService {
     const connections = await connectionRepo.find({
       where: [
         { user: { id: userId }, status: ConnectionStatus.PENDING },
-        { requester: { id: userId }, status: ConnectionStatus.PENDING },
       ],
       relations: ['user', 'requester'],
     });

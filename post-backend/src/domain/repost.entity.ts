@@ -9,6 +9,9 @@ export class Repost {
     @Column()
     userId: string;
 
+    @Column()
+    repostedBy: string;
+
     @ManyToOne(()=> Post, post => post.repost)
     @JoinColumn({name:'postId'})
     post: Post;

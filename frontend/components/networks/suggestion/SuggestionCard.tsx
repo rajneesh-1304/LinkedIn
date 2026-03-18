@@ -1,6 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-/* eslint-disable @next/next/no-img-element */
-
 "use client";
 
 import { useState, useEffect } from "react";
@@ -22,7 +19,11 @@ import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import {
   addConnectionThunk,
   checkConnectionThunk,
+  getPendingConnectionThunk,
+  removeConnectionThunk,
+  updateConnectionThunk,
 } from "@/redux/features/connection/connectionSlice";
+
 import {
   addFollowingThunk,
   checkFollowingThunk,
@@ -47,35 +48,49 @@ export default function SuggestionCard({ user, onRemove }: SuggestionCardProps) 
   const dispatch = useAppDispatch();
   const currentUser = useAppSelector((state) => state.users.currentUser);
 
+  const currentUserId = currentUser?.id;
+  const userId = user.id;
+
   const [followed, setFollowed] = useState(false);
-  const [requested, setRequested] = useState(false);
+
+  const [connectionStatus, setConnectionStatus] = useState<null | {
+    status: string;
+    requesterId: any;
+    userId: any;
+    isRequester: boolean;
+  }>(null);
+
   const [followersCount, setFollowersCount] = useState(user.followersCount || 0);
 
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
-  const [snackbarSeverity, setSnackbarSeverity] = useState<"success" | "error">("success");
-
-  const currentUserId = currentUser?.id;
-  const userId = user.id;
+  const [snackbarSeverity, setSnackbarSeverity] =
+    useState<"success" | "error">("success");
 
   const checkFollowStatus = async () => {
     if (!currentUserId || !userId) return;
+
     try {
-      const res = await dispatch(checkFollowingThunk({ id: currentUserId, userId }));
+      const res = await dispatch(
+        checkFollowingThunk({ id: currentUserId, userId })
+      );
       setFollowed(res?.payload);
     } catch (err) {
-      console.error("Follow status error:", err);
+      console.error(err);
     }
   };
 
   const checkConnectionStatus = async () => {
     if (!currentUserId || !userId) return;
+
     try {
-      const res = await dispatch(checkConnectionThunk({ id: currentUserId, userId }));
-      if (res?.payload === "PENDING") setRequested(true);
-      else setRequested(false);
+      const res = await dispatch(
+        checkConnectionThunk({ id: currentUserId, userId })
+      ).unwrap();
+
+      setConnectionStatus(res || null);
     } catch (err) {
-      console.error("Connection status error:", err);
+      console.error(err);
     }
   };
 
@@ -84,43 +99,71 @@ export default function SuggestionCard({ user, onRemove }: SuggestionCardProps) 
 
     try {
       if (followed) {
-        await dispatch(removeFollowingThunk({ id: currentUserId, userId })).unwrap();
+        await dispatch(
+          removeFollowingThunk({ id: currentUserId, userId })
+        ).unwrap();
+
         setFollowed(false);
         setFollowersCount((prev) => Math.max(prev - 1, 0));
-        setSnackbarMessage("Unfollowed successfully");
-        setSnackbarSeverity("success");
+        setSnackbarMessage("Unfollowed");
       } else {
-        await dispatch(addFollowingThunk({ id: currentUserId, userId })).unwrap();
+        await dispatch(
+          addFollowingThunk({ id: currentUserId, userId })
+        ).unwrap();
+
         setFollowed(true);
         setFollowersCount((prev) => prev + 1);
-        setSnackbarMessage("Followed successfully");
-        setSnackbarSeverity("success");
+        setSnackbarMessage("Followed");
       }
+
+      setSnackbarSeverity("success");
       setSnackbarOpen(true);
     } catch (err) {
-      setFollowed(false);
-      console.error("Follow toggle error:", err);
+      console.error(err);
       setSnackbarMessage("Something went wrong");
       setSnackbarSeverity("error");
       setSnackbarOpen(true);
     }
   };
 
-  const handleConnectToggle = async () => {
+  const handleConnect = async () => {
     if (!currentUserId || !userId) return;
 
     try {
-      await dispatch(addConnectionThunk({ id: currentUserId, userId })).unwrap();
-      setRequested(true);
-      setSnackbarMessage("Connection request sent");
+      await dispatch(
+        addConnectionThunk({ id: currentUserId, userId })
+      ).unwrap();
+
+      setConnectionStatus({
+        status: "PENDING",
+        requesterId: currentUserId,
+        userId,
+        isRequester: true,
+      });
+
+      setSnackbarMessage("Request sent");
       setSnackbarSeverity("success");
       setSnackbarOpen(true);
     } catch (err) {
-      setRequested(false);
-      console.error("Connection toggle error:", err);
-      setSnackbarMessage("Failed to send request");
-      setSnackbarSeverity("error");
-      setSnackbarOpen(true);
+      console.error(err);
+    }
+  };
+
+  const handleAccept = async () => {
+    try {
+      await dispatch(updateConnectionThunk({ id: currentUserId, userId })).unwrap();
+      dispatch(getPendingConnectionThunk({ id: currentUserId }));
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleReject = async () => {
+    try {
+      await dispatch(removeConnectionThunk({ id: currentUserId, userId })).unwrap();
+      dispatch(getPendingConnectionThunk({ id: currentUserId }));
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -130,19 +173,15 @@ export default function SuggestionCard({ user, onRemove }: SuggestionCardProps) 
   }, [currentUserId, userId]);
 
   return (
-    <Paper elevation={1} className="suggestion-card">
+    <Paper elevation={1}>
       <Box
-        className="cover-wrapper"
-        style={{
+        sx={{
           backgroundColor: "#1282f3",
-          backgroundSize: "cover",
-          backgroundPosition: "center",
           height: "80px",
           position: "relative",
         }}
       >
         <IconButton
-          className="close-btn"
           size="small"
           onClick={() => onRemove?.(user.id)}
           sx={{ position: "absolute", top: 4, right: 4, color: "#fff" }}
@@ -151,57 +190,61 @@ export default function SuggestionCard({ user, onRemove }: SuggestionCardProps) 
         </IconButton>
       </Box>
 
-      <Box className="avatar-wrapper" sx={{ display: "flex", justifyContent: "center", mt: -4 }}>
+      <Box sx={{ display: "flex", justifyContent: "center", mt: -4 }}>
         <Avatar
           src={user.profilePicture}
           sx={{ width: 64, height: 64, border: "3px solid white" }}
         />
       </Box>
 
-      <Box className="card-body" sx={{ p: 2, textAlign: "center" }}>
+      <Box sx={{ p: 2, textAlign: "center" }}>
         <Typography fontWeight={600}>
           {user.firstName} {user.lastName}
         </Typography>
 
-        {user.headline && (
-          <Typography fontSize={13} color="text.secondary" sx={{ mt: 0.5 }}>
-            {user.headline}
-          </Typography>
-        )}
+        <Typography fontSize={13} color="text.secondary">
+          {user.headline}
+        </Typography>
 
         <Button
           startIcon={!followed ? <AddIcon /> : undefined}
           variant={followed ? "contained" : "outlined"}
           fullWidth
-          sx={{
-            mt: 2,
-            borderRadius: "999px",
-            backgroundColor: followed ? "#1282f3" : "transparent",
-            color: followed ? "#fff" : "#1282f3",
-            textTransform: "none",
-          }}
+          sx={{ mt: 2, borderRadius: "999px", textTransform: "none" }}
           onClick={handleFollowToggle}
         >
           {followed ? "Following" : "Follow"}
         </Button>
 
-        <Button
-          variant={requested ? "contained" : "outlined"}
-          fullWidth
-          sx={{
-            mt: 1,
-            borderRadius: "999px",
-            textTransform: "none",
-            backgroundColor: requested ? "#1282f3" : "transparent",
-            color: requested ? "#fff" : "#1282f3",
-          }}
-          onClick={() => {
-            if (requested) return;
-            handleConnectToggle();
-          }}
-        >
-          {requested ? "Pending" : "Connect"}
-        </Button>
+        {connectionStatus?.status === "PENDING" ? (
+          connectionStatus.isRequester ? (
+            <Button
+              variant="contained"
+              fullWidth
+              sx={{ mt: 1, borderRadius: "999px" }}
+            >
+              Pending
+            </Button>
+          ) : (
+            <Box sx={{ display: "flex", gap: 1, mt: 1 }}>
+              <Button fullWidth variant="contained" onClick={handleAccept}>
+                Accept
+              </Button>
+              <Button fullWidth variant="outlined" onClick={handleReject}>
+                Reject
+              </Button>
+            </Box>
+          )
+        ) : (
+          <Button
+            variant="outlined"
+            fullWidth
+            sx={{ mt: 1, borderRadius: "999px" }}
+            onClick={handleConnect}
+          >
+            Connect
+          </Button>
+        )}
       </Box>
 
       <Snackbar
@@ -209,13 +252,7 @@ export default function SuggestionCard({ user, onRemove }: SuggestionCardProps) 
         autoHideDuration={3000}
         onClose={() => setSnackbarOpen(false)}
       >
-        <Alert
-          onClose={() => setSnackbarOpen(false)}
-          severity={snackbarSeverity}
-          sx={{ width: "100%" }}
-        >
-          {snackbarMessage}
-        </Alert>
+        <Alert severity={snackbarSeverity}>{snackbarMessage}</Alert>
       </Snackbar>
     </Paper>
   );

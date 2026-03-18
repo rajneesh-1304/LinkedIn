@@ -15,7 +15,7 @@ const Createpost = () => {
   const currentUser = useAppSelector(state => state.users.currentUser);
   const id: any = currentUser?.id;
   const currentProfile = useAppSelector(state => state.profile.currentProfile);
-
+  console.log(posts, 'hello i am post', users);
   // useEffect(() => {
   //   if (!currentProfile) {
   //     const formDataToSend={
@@ -68,14 +68,10 @@ const Createpost = () => {
           <PostCard
             key={post.id}
             post={post}
-            user={user}
           />
         );
       })}
 
-      {/* {posts?.map((post) => (
-        <PostCard key={post.id} post={post} />
-      ))} */}
 
       {isOpen && <Post close={() => setIsOpen(false)} />}
     </div>

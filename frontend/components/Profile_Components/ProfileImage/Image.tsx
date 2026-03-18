@@ -30,7 +30,7 @@ const Image = () => {
 
                 <div className="profile-info">
                     <h1 className="name">{profile?.firstName} {profile?.lastName}</h1>
-                    <p className="headline">--</p>
+                    <p className="headline">{profile?.headline}</p>
                     <p className="location">{profile?.location}</p>
 
                     <div className="buttons">

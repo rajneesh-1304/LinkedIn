@@ -4,6 +4,7 @@ import { Comment } from "src/domain/comment.entity";
 import { Like } from "src/domain/like.entity";
 import { Post } from "src/domain/post.entity";
 import { Repost } from "src/domain/repost.entity";
+import axios from 'axios';
 
 @Injectable()
 export class PostService {
@@ -27,14 +28,91 @@ export class PostService {
     return { message: "Post created successfully" };
   }
 
-  async getPosts(userId: any) {
-    const postRepo = this.dataSource.getRepository(Post);
-    const likeRepo = this.dataSource.getRepository(Like);
-    const commentRepo = this.dataSource.getRepository(Comment);
-    const repostRepo = this.dataSource.getRepository(Repost);
+  // async getPosts(userId: any) {
+  //   const postRepo = this.dataSource.getRepository(Post);
+  //   const likeRepo = this.dataSource.getRepository(Like);
+  //   const commentRepo = this.dataSource.getRepository(Comment);
+  //   const repostRepo = this.dataSource.getRepository(Repost);
+
+  //   const posts = await postRepo.find();
+
+  //   const reposts = await repostRepo.find({
+  //     relations: ["post"]
+  //   });
+
+  //   const postFeed = await Promise.all(
+  //     posts.map(async (post) => {
+
+  //       const likesCount = await likeRepo.count({
+  //         where: { post: { id: post.id } }
+  //       });
+
+  //       const comments = await commentRepo.find({
+  //         where: { post: { id: post.id } }
+  //       });
+
+  //       const nestedComments = await this.buildNestedComments(comments);
+
+  //       const isLiked = await likeRepo.findOne({
+  //         where: { post: { id: post.id }, userId: userId.id }
+  //       });
+
+  //       const repostCount = await repostRepo.count({
+  //         where: { post: { id: post.id } }
+  //       });
+
+  //       const isReposted = await repostRepo.findOne({
+  //         where: { post: { id: post.id }, userId: userId.id }
+  //       });
+
+  //       return {
+  //         type: "post",
+  //         ...post,
+  //         likesCount,
+  //         commentsCount: nestedComments.length,
+  //         comments: nestedComments,
+  //         repostCount,
+  //         isLiked: !!isLiked,
+  //         isReposted: !!isReposted,
+  //         createdAt: post.createdAt
+  //       };
+  //     })
+  //   );
+
+  //   const repostFeed = reposts.map((repost) => ({
+  //     type: "repost",
+  //     id: repost.id,
+  //     userId: repost.userId,
+  //     repostedBy: repost.repostedBy,
+  //     post: repost.post,
+  //     createdAt: repost.createdAt
+  //   }));
+
+  //   const feed = [...postFeed, ...repostFeed];
+
+  //   feed.sort((a, b) =>
+  //     new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+  //   );
+
+  //   return feed;
+  // }
+
+async getPosts(userId: any) {
+  const postRepo = this.dataSource.getRepository(Post);
+  const likeRepo = this.dataSource.getRepository(Like);
+  const commentRepo = this.dataSource.getRepository(Comment);
+  const repostRepo = this.dataSource.getRepository(Repost);
+
+  try {
+    const response = await axios.get('http://backend:3001/profile/getAll');
+    const users = response.data.user || response.data;
+
+    const userMap = new Map();
+    users.forEach((u: any) => {
+      userMap.set(u.id, u);
+    });
 
     const posts = await postRepo.find();
-
     const reposts = await repostRepo.find({
       relations: ["post"]
     });
@@ -67,6 +145,7 @@ export class PostService {
         return {
           type: "post",
           ...post,
+          user: userMap.get(post.userId) || null,
           likesCount,
           commentsCount: nestedComments.length,
           comments: nestedComments,
@@ -78,12 +157,21 @@ export class PostService {
       })
     );
 
+    const postMap = new Map();
+    postFeed.forEach((p) => {
+      postMap.set(p.id, p);
+    });
+
     const repostFeed = reposts.map((repost) => ({
       type: "repost",
       id: repost.id,
       userId: repost.userId,
-      post: repost.post,
-      createdAt: repost.post.createdAt
+      user: userMap.get(repost.userId) || null,
+      repostedBy: repost.repostedBy,
+
+      originalPost: postMap.get(repost.post.id) || null,
+
+      createdAt: repost.createdAt
     }));
 
     const feed = [...postFeed, ...repostFeed];
@@ -93,7 +181,11 @@ export class PostService {
     );
 
     return feed;
+
+  } catch (error) {
+    throw error;
   }
+}
 
 
   private async buildNestedComments(comments: Comment[], parentId: string = null) {
@@ -138,7 +230,7 @@ export class PostService {
     return { message: 'Added Comment' };
   }
 
-  async toggleLike(postId: any, userId: any) {
+  async toggleLike(postId: any, userId: any,) {
     const likeRepo = this.dataSource.getRepository(Like);
     const postRepo = this.dataSource.getRepository(Post);
     if (!userId.userId) {
@@ -149,7 +241,6 @@ export class PostService {
     if (!post) {
       throw new NotFoundException('Post not found');
     }
-
 
     const existingLike = await likeRepo.findOne({
       where: { post: { id: postId.id }, userId: userId.userId },
@@ -169,7 +260,7 @@ export class PostService {
     return { message: 'Post liked', liked: true };
   }
 
-  async addRepost(id: any, userId: any) {
+  async addRepost(id: any, userId: any,  name: any) {
     const postRepo = this.dataSource.getRepository(Post);
     const repostRepo = this.dataSource.getRepository(Repost);
     const post = await postRepo.findOne({ where: { id: id?.id } });
@@ -193,7 +284,8 @@ export class PostService {
 
     const repost = repostRepo.create({
       post,
-      userId: userId
+      userId: userId,
+      repostedBy: name,
     });
     await repostRepo.save(repost);
     return { message: 'Post reposted successfully', reposted: true };

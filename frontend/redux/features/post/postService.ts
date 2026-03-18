@@ -62,10 +62,10 @@ export const isLiked = async (id: string, userId: string) => {
   }
 }
 
-export const repost = async (id:string, userId: string) => {
+export const repost = async (id:string, userId: string, name: string) => {
   try {
     const url =`${BASE_URL}/repost/${id}`;
-     const res = await axios.post(url, {userId}, {
+     const res = await axios.post(url, {userId, name}, {
         withCredentials: true,
       },);
     return res.data;

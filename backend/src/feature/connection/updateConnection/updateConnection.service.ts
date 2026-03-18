@@ -42,10 +42,13 @@ export class UpdateConnectionService {
     connection.status = ConnectionStatus.CONNECTED;
     await connectionRepo.save(connection);
     this.publishService.publish({
+      id: `${userId}_${otherUserId}`,
       senderId: userId,
       receiverId: otherUserId,
+      senderName: user.firstName,
       type: 'REQUEST_ACCEPTED',
-      message: `${otherUser.firstName} accepted request.`
+      handler: 'ACCEPT_REQUEST',
+      message: `${user.firstName} accepted your request.`
       
     })
 

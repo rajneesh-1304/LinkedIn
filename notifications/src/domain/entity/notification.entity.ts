@@ -18,6 +18,9 @@ export class Notification{
     @Column()
     senderId: string;
 
+    @Column()
+    senderName: string;
+
     @Column({default: false})
     isSeen: boolean;
 

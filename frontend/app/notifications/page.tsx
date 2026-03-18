@@ -39,7 +39,6 @@ export default function Notifications() {
   const userId =currentUser?.id;
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const noti = useAppSelector(state => state.notifications.notifications);
-  console.log(noti, ' hello i am notifications ');
   useEffect(()=>{
     dispatch(getNotificationThunk({userId}));
   },[]);
@@ -118,11 +117,7 @@ export default function Notifications() {
               >
 
                 <Avatar
-                  // src={
-                  //   notification.sender?.profilePicture
-                  //     ? backendUrl + notification.sender.profilePicture
-                  //     : undefined
-                  // }
+                  
                 />
 
                 <Box>
@@ -130,9 +125,6 @@ export default function Notifications() {
                   <Typography>
 
                     <strong>
-                      {/* {notification.sender?.firstName}{" "}
-                      {notification.sender?.lastName} */}
-                      {notification.senderId}
                     </strong>{" "}
                     {notification.message}
 

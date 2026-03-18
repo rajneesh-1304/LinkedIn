@@ -47,6 +47,25 @@
   margin-top:10px;
   font-size:14px;
   line-height:1.5;
+  white-space: pre-wrap;
+}
+
+/* SEE MORE BUTTON */
+
+.see-more-btn {
+  background: none;
+  border: none;
+  color: #0a66c2;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 14px;
+  padding: 0;
+  margin-left: 4px;
+  user-select: none;
+}
+
+.see-more-btn:hover {
+  text-decoration: underline;
 }
 
 /* IMAGE GALLERY */

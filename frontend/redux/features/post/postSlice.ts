@@ -80,9 +80,9 @@ export const isLikedThunk = createAsyncThunk(
 
 export const repostThunk = createAsyncThunk(
   'post/repost',
-  async ({id, userId}: any, { rejectWithValue }) => {
+  async ({id, userId, name}: any, { rejectWithValue }) => {
     try {
-      return await repost(id, userId);
+      return await repost(id, userId, name);
     } catch (err: any) {
       return rejectWithValue(err.message);
     }

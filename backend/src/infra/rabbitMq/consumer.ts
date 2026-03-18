@@ -23,10 +23,8 @@ export class ConsumerService {
 
         channel.consume(postQueue.queue, async (msg) => {
             if (!msg) return;
-            console.log(msg, 'hello i am messages');
 
             const data = JSON.parse(msg.content.toString());
-            console.log(data, 'hi i am data');
             const isPresent = await inboxRepo.findOne({ where: { messageId: data.id } });
             if (!isPresent) {
                 const inbox = inboxRepo.create({
@@ -34,8 +32,8 @@ export class ConsumerService {
                     handler: 'POST'
                 })
                 const user = repo.create({
-                    id: data.id,
-                    firstName: data.firstName,
+                    id: data.message.id,
+                    firstName: data.message.firstName,
                 })
                 await inboxRepo.save(inbox);
                 await repo.save(user);

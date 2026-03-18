@@ -1,28 +1,22 @@
-body{
-  background: #f3f2ef;
+.home-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
 }
 
-.lmr{
-  max-width: 1128px;
-  margin: 24px auto;
-  display: grid;
-  grid-template-columns: 260px 555px 300px;
-  gap: 24px;
-  align-items: flex-start;
+.lmr {
+  display: flex;
+  gap: 20px;
+  padding: 20px;
+  overflow-y: auto;
+  flex: 1;
+  justify-content: center;
+
+  background-color: #f6f4f0;
 }
 
-.lmr > :first-child{
+.home-container > :first-child {
   position: sticky;
-  top: 80px;
-}
-
-/* FEED */
-.lmr > :nth-child(2){
-  width: 100%;
-}
-
-/* RIGHT SIDEBAR */
-.lmr > :last-child{
-  position: sticky;
-  top: 80px;
+  top: 0;
+  z-index: 1100;
 }

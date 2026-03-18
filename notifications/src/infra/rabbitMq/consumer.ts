@@ -25,14 +25,15 @@ export class ConsumerService {
             if (!msg) return;
 
             const data = JSON.parse(msg.content.toString());
-            const isPresent = await inboxRepo.findOne({ where: { messageId: data.senderId } });
+            const isPresent = await inboxRepo.findOne({ where: { messageId: data.senderId, handler: data.handler } });
             if (!isPresent) {
                 const inbox = inboxRepo.create({
                     messageId: data.senderId,
-                    handler: 'Notification'
+                    handler: data.handler
                 })
                 const notification = repo.create({
                     senderId: data.senderId,
+                    senderName: data.senderName,
                     receiverId: data.receiverId,
                     type: data.type,
                     message: data.message,

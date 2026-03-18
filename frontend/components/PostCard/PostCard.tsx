@@ -11,64 +11,77 @@ import './postcard.css'
 
 type Props = {
   post: any;
-  user: any;
 };
 
-const PostCard = ({ post, user }: Props) => {
+const PostCard = ({ post }: Props) => {
 
   const isRepost = post.type === "repost";
-  const actualPost = isRepost ? post.post : post;
+
+  const actualPost = isRepost ? post.originalPost : post;
+  const displayUser = isRepost ? actualPost?.user : post.user;
 
   const [commentText, setCommentText] = useState("");
   const [showComments, setShowComments] = useState(false);
 
-  const [liked, setLiked] = useState(post.isLiked);
-  const [reposted, setReposted] = useState(post.isReposted);
-  const [likesCount, setLikesCount] = useState(post.likesCount);
-  const [repostCount, setRepostCount] = useState(post.repostCount);
-  const [comments, setComments] = useState(post.comments || []);
+  const [liked, setLiked] = useState(false);
+  const [reposted, setReposted] = useState(false);
+  const [likesCount, setLikesCount] = useState(0);
+  const [repostCount, setRepostCount] = useState(0);
+  const [comments, setComments] = useState<any[]>([]);
 
   const currentUser = useAppSelector((state) => state.users.currentUser);
+  const currentProfile = useAppSelector((state) => state.profile.currentProfile);
   const userId = currentUser?.id;
 
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    setLiked(post.isLiked);
-    setReposted(post.isReposted);
-    setLikesCount(post.likesCount);
-    setRepostCount(post.repostCount);
-    setComments(post.comments || []);
-  }, [post]);
+    if (!actualPost) return;
+
+    setLiked(actualPost.isLiked || false);
+    setReposted(actualPost.isReposted || false);
+    setLikesCount(actualPost.likesCount || 0);
+    setRepostCount(actualPost.repostCount || 0);
+    setComments(actualPost.comments || []);
+  }, [actualPost]);
+
+  if (!actualPost) return null;
 
   const handleLike = async () => {
-    setLiked(!liked);
-    setLikesCount(liked ? likesCount - 1 : likesCount + 1);
+    const prev = liked;
+
+    setLiked(!prev);
+    setLikesCount(prev ? likesCount - 1 : likesCount + 1);
 
     try {
       await dispatch(toggleLikeThunk({ id: actualPost.id, userId })).unwrap();
-    } catch (err) {
-      setLiked(liked);
-      setLikesCount(likesCount);
-      console.error("Like action failed", err);
+    } catch {
+      setLiked(prev);
+      setLikesCount(actualPost.likesCount || 0);
     }
   };
 
   const handleRepost = async () => {
-    setReposted(!reposted);
-    setRepostCount(reposted ? repostCount - 1 : repostCount + 1);
-    
+    const prev = reposted;
+
+    setReposted(!prev);
+    setRepostCount(prev ? repostCount - 1 : repostCount + 1);
+
     try {
-      if(actualPost.userId === userId){
-        throw 'User cant repost his post';
-      }
-      await dispatch(repostThunk({ id: actualPost.id, userId })).unwrap();
-    } catch (error) {
-      setReposted(reposted);
-      setRepostCount(repostCount);
-      console.log('Repost action failed', error);
+      if (actualPost.userId === userId) throw 'User cant repost his post';
+
+      await dispatch(
+        repostThunk({
+          id: actualPost.id,
+          userId,
+          name: currentProfile.firstName
+        })
+      ).unwrap();
+    } catch {
+      setReposted(prev);
+      setRepostCount(actualPost.repostCount || 0);
     }
-  }
+  };
 
   const handleComment = async () => {
     if (!commentText.trim()) return;
@@ -82,31 +95,41 @@ const PostCard = ({ post, user }: Props) => {
 
     setComments([newComment, ...comments]);
     setCommentText("");
-    setShowComments(true);
 
     try {
-      await dispatch(addCommentThunk({ id: actualPost.id, data: { userId, text: commentText } })).unwrap();
-
-    } catch (err) {
-      setComments(comments);
-      console.error("Add comment failed", err);
+      await dispatch(
+        addCommentThunk({
+          id: actualPost.id,
+          data: { userId, text: commentText }
+        })
+      ).unwrap();
+    } catch {
+      setComments(actualPost.comments || []);
     }
   };
 
   return (
-    <div className="post-card" style={{ marginBottom: "10px" }}>
+    <div className={`post-card ${isRepost ? "repost-card" : ""}`} style={{ marginBottom: "10px" }}>
 
       {isRepost && (
         <div className="repost-label">
-          🔁 {post.userId} reposted
+          🔁 {post.repostedBy} reposted
         </div>
       )}
 
       <div className="post-header">
-        <img src={user?.profilePicture || "/default-avatar.png"} className="avatar" />
+        <div className="avatar">
+          {displayUser?.profilePicture ? (
+            <img src={displayUser.profilePicture} alt="avatar" />
+          ) : (
+            <div className="avatar-initial">
+              {displayUser?.firstName?.[0]?.toUpperCase() || "U"}
+            </div>
+          )}
+        </div>
         <div>
-          <h4>{user?.firstName} {user?.lastName}</h4>
-          <p className="role">{user?.location}</p>
+          <h4>{displayUser?.firstName} {displayUser?.lastName}</h4>
+          <p className="role">{displayUser?.location}</p>
         </div>
       </div>
 
@@ -115,42 +138,40 @@ const PostCard = ({ post, user }: Props) => {
       {actualPost.image && actualPost.image.length > 0 && (
         <div className="image-gallery">
           {actualPost.image.map((imgUrl: string, idx: number) => (
-            <img key={idx} src={imgUrl} className="post-image" alt={`Post ${idx + 1}`} />
+            <img key={idx} src={imgUrl} className="post-image" />
           ))}
         </div>
       )}
 
       <div className="divider"></div>
 
-      {!isRepost && (
-        <div className="post-actions">
+      <div className="post-actions">
 
-          <button
-            onClick={handleLike}
-            style={{ color: liked ? "mediumslateblue" : "black" }}
-          >
-            <ThumbUpOffAltIcon /> {liked ? "Liked" : "Like"} ({likesCount})
-          </button>
+        <button
+          onClick={handleLike}
+          style={{ color: liked ? "mediumslateblue" : "black" }}
+        >
+          <ThumbUpOffAltIcon /> {liked ? "Liked" : "Like"} ({likesCount})
+        </button>
 
-          <button onClick={() => setShowComments(!showComments)}>
-            💬 Comment ({comments.length})
-          </button>
+        <button onClick={() => setShowComments(!showComments)}>
+          💬 Comment ({comments.length})
+        </button>
 
-          <button
-            onClick={handleRepost}
-            style={{ color: reposted ? "mediumslateblue" : "black" }}
-          >
-            <RepeatRoundedIcon /> {reposted ? "Reposted" : "Repost"} ({repostCount})
-          </button>
+        <button
+          onClick={handleRepost}
+          style={{ color: reposted ? "mediumslateblue" : "black" }}
+        >
+          <RepeatRoundedIcon /> {reposted ? "Reposted" : "Repost"} ({repostCount})
+        </button>
 
-          <button>
-            <SendRoundedIcon /> Send
-          </button>
+        <button>
+          <SendRoundedIcon /> Send
+        </button>
 
-        </div>
-      )}
+      </div>
 
-      {!isRepost && showComments && (
+      {showComments && (
         <div className="comments-section">
           <input
             type="text"

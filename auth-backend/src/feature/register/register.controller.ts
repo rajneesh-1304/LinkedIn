@@ -19,8 +19,6 @@ export class RegisterController {
       sameSite: 'lax',
       maxAge: 1000 * 60 * 60 * 8,
     });
-
-    this.publishService.publish(user);
     
     return {
       message: 'User created successfully',

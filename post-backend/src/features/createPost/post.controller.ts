@@ -36,9 +36,11 @@ export class PostController {
   }
 
   @Post('repost/:id')
-  addRepost(@Param() id: string, @Body() userId: any){
-    console.log(id, userId.userId)
-    return this.postService.addRepost(id, userId.userId);
+  addRepost(@Param() id: string, 
+  @Body('userId') userId: any,
+  @Body('name') name: any,
+){
+    return this.postService.addRepost(id, userId, name);
   }
 
   // @Get('like/total/:id')

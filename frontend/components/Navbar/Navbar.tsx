@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./Navbar.css";
 import { useRouter } from "next/navigation";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
@@ -28,12 +28,14 @@ import WorkIcon from "@mui/icons-material/Work";
 import ChatIcon from "@mui/icons-material/Chat";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
+import { getProfileThunk } from "@/redux/features/profile/profileSlice";
 
 export default function Navbar() {
 
   const router = useRouter();
   const dispatch = useAppDispatch();
   const currentUser = useAppSelector((state) => state.users.currentUser);
+  const userId = currentUser?.id;
   const currentProfile = useAppSelector(state => state.profile.currentProfile);
 
   const [anchorEl, setAnchorEl] = useState<HTMLDivElement | null>(null);
@@ -53,8 +55,19 @@ export default function Navbar() {
     router.push("/home");
   };
 
+  useEffect(()=>{
+    if(userId){
+      dispatch(getProfileThunk(userId));
+    }
+  },[userId]);
+
   return (
-    <AppBar position="sticky" elevation={0} className="li-navbar">
+    <AppBar
+  position="sticky"
+  elevation={0}
+  className="li-navbar"
+  sx={{ top: 0, zIndex: (theme) => theme.zIndex.appBar }}
+>
 
       <Toolbar className="li-toolbar">
 
@@ -140,53 +153,70 @@ export default function Navbar() {
               </div>
 
               <Menu
-                anchorEl={anchorEl}
-                open={open}
-                onClose={handleClose}
-                anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-                transformOrigin={{ vertical: "top", horizontal: "right" }}
-                PaperProps={{ className: "li-profile-menu" }}
-              >
+  anchorEl={anchorEl}
+  open={open}
+  onClose={handleClose}
+  anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+  transformOrigin={{ vertical: "top", horizontal: "right" }}
+  PaperProps={{ className: "li-profile-menu" }}
+>
+  {/* Header */}
+  <div className="li-menu-header">
+    <Avatar
+      className="li-menu-avatar"
+      src={currentProfile?.profilePicture}
+    />
+    <div>
+      <Typography className="li-menu-name">
+        {currentProfile?.firstName || "User"}
+      </Typography>
+      <Typography className="li-menu-headline">
+        --
+      </Typography>
+    </div>
+  </div>
 
-                <div className="li-menu-header">
+  {/* View Profile */}
+  <div className="li-view-profile-wrapper">
+    <Button
+      fullWidth
+      variant="outlined"
+      className="li-view-profile"
+      onClick={() => router.push("/profile")}
+    >
+      View profile
+    </Button>
+  </div>
 
-                  <Avatar className="li-menu-avatar" src={currentProfile?.profilePicture} />
+  <Divider />
 
-                  <div>
-                    <Typography className="li-menu-name">
-                      {currentProfile?.firstName || "User"}
-                    </Typography>
+  {/* Account Section */}
+  <Typography className="li-menu-section">Account</Typography>
 
-                    <Typography className="li-menu-headline">
-                      Welcome back
-                    </Typography>
-                  </div>
+  <MenuItem>Try 1 month of Premium for ₹0</MenuItem>
+  <MenuItem>Settings & Privacy</MenuItem>
+  <MenuItem>Help</MenuItem>
+  <MenuItem>Language</MenuItem>
 
-                </div>
+  <Divider />
 
-                <div className="li-view-profile-wrapper">
-                  <Button
-                    fullWidth
-                    variant="outlined"
-                    className="li-view-profile"
-                    onClick={() => router.push("/profile")}
-                  >
-                    View profile
-                  </Button>
-                </div>
+  {/* Manage Section */}
+  <Typography className="li-menu-section">Manage</Typography>
 
-                <Divider />
+  <MenuItem>Posts & Activity</MenuItem>
+  <MenuItem>Job Posting Account</MenuItem>
 
-                <MenuItem
-                  onClick={() => {
-                    handleClose();
-                    handleLogout();
-                  }}
-                >
-                  Sign out
-                </MenuItem>
+  <Divider />
 
-              </Menu>
+  <MenuItem
+    onClick={() => {
+      handleClose();
+      handleLogout();
+    }}
+  >
+    Sign out
+  </MenuItem>
+</Menu>
             </>
           )}
 

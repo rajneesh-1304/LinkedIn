@@ -17,7 +17,6 @@ export class CheckConnectionService {
     if (!userId || !otherUserId) {
       throw new BadRequestException('User Ids are requested');
     }
-    console.log(userId, otherUserId, 'hdfkalsdlfa;sdmnfl')
     const userRepo = this.dataSource.getRepository(User);
     const connectionRepo = this.dataSource.getRepository(Connection);
 
@@ -37,11 +36,17 @@ export class CheckConnectionService {
       where: [
         {user: {id: userId}, requester: {id:otherUserId}},
         { user: { id: otherUserId }, requester: { id: userId },},
-      ]
+      ],
+      relations: ['requester','user'],
     })
     if(!connection){
-      return 'NONE';
+      return null;
     }
-    return connection.status;
+    return {
+    status: connection.status,
+    requesterId: connection.requester.id,
+    userId: connection.user.id,
+    isRequester: connection.requester.id === userId,
+  };
   }
 }
