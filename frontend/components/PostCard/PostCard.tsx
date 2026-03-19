@@ -7,6 +7,8 @@ import CommentItem from "../CommentItem/CommentItem";
 import ThumbUpOffAltIcon from '@mui/icons-material/ThumbUpOffAlt';
 import RepeatRoundedIcon from '@mui/icons-material/RepeatRounded';
 import SendRoundedIcon from '@mui/icons-material/SendRounded';
+import { differenceInSeconds, differenceInMinutes, differenceInHours, differenceInDays } from 'date-fns';
+
 import './postcard.css'
 
 type Props = {
@@ -16,7 +18,6 @@ type Props = {
 const PostCard = ({ post }: Props) => {
 
   const isRepost = post.type === "repost";
-
   const actualPost = isRepost ? post.originalPost : post;
   const displayUser = isRepost ? actualPost?.user : post.user;
 
@@ -35,6 +36,19 @@ const PostCard = ({ post }: Props) => {
 
   const dispatch = useAppDispatch();
 
+  const formatRelativeShort = (date: string | Date) => {
+    const now = new Date();
+    const past = new Date(date);
+    const seconds = differenceInSeconds(now, past);
+    if (seconds < 60) return `${seconds}s`;
+    const minutes = differenceInMinutes(now, past);
+    if (minutes < 60) return `${minutes}m`;
+    const hours = differenceInHours(now, past);
+    if (hours < 24) return `${hours}h`;
+    const days = differenceInDays(now, past);
+    return `${days}d`;
+  };
+
   useEffect(() => {
     if (!actualPost) return;
 
@@ -49,7 +63,6 @@ const PostCard = ({ post }: Props) => {
 
   const handleLike = async () => {
     const prev = liked;
-
     setLiked(!prev);
     setLikesCount(prev ? likesCount - 1 : likesCount + 1);
 
@@ -63,13 +76,11 @@ const PostCard = ({ post }: Props) => {
 
   const handleRepost = async () => {
     const prev = reposted;
-
     setReposted(!prev);
     setRepostCount(prev ? repostCount - 1 : repostCount + 1);
 
     try {
       if (actualPost.userId === userId) throw 'User cant repost his post';
-
       await dispatch(
         repostThunk({
           id: actualPost.id,
@@ -113,7 +124,7 @@ const PostCard = ({ post }: Props) => {
 
       {isRepost && (
         <div className="repost-label">
-          🔁 {post.repostedBy} reposted
+          🔁 {post.repostedBy} reposted this
         </div>
       )}
 
@@ -129,16 +140,24 @@ const PostCard = ({ post }: Props) => {
         </div>
         <div>
           <h4>{displayUser?.firstName} {displayUser?.lastName}</h4>
-          <p className="role">{displayUser?.location}</p>
+          <p className="role">{displayUser?.headline}</p>
+          <p className="role">{displayUser?.createdAt ? formatRelativeShort(displayUser.createdAt) : ''}</p>
         </div>
       </div>
 
       <p className="post-text">{actualPost.text}</p>
 
       {actualPost.image && actualPost.image.length > 0 && (
-        <div className="image-gallery">
-          {actualPost.image.map((imgUrl: string, idx: number) => (
-            <img key={idx} src={imgUrl} className="post-image" />
+        <div className={`image-gallery images-${actualPost.image.length}`}>
+          {actualPost.image.slice(0, 4).map((imgUrl: string, idx: number) => (
+            <div key={idx} className="image-wrapper">
+              <img src={imgUrl} className="post-image" />
+              {idx === 3 && actualPost.image.length > 4 && (
+                <div className="overlay">
+                  +{actualPost.image.length - 4}
+                </div>
+              )}
+            </div>
           ))}
         </div>
       )}
@@ -146,11 +165,7 @@ const PostCard = ({ post }: Props) => {
       <div className="divider"></div>
 
       <div className="post-actions">
-
-        <button
-          onClick={handleLike}
-          style={{ color: liked ? "mediumslateblue" : "black" }}
-        >
+        <button onClick={handleLike} style={{ color: liked ? "mediumslateblue" : "black" }}>
           <ThumbUpOffAltIcon /> {liked ? "Liked" : "Like"} ({likesCount})
         </button>
 
@@ -158,17 +173,13 @@ const PostCard = ({ post }: Props) => {
           💬 Comment ({comments.length})
         </button>
 
-        <button
-          onClick={handleRepost}
-          style={{ color: reposted ? "mediumslateblue" : "black" }}
-        >
+        <button onClick={handleRepost} style={{ color: reposted ? "mediumslateblue" : "black" }}>
           <RepeatRoundedIcon /> {reposted ? "Reposted" : "Repost"} ({repostCount})
         </button>
 
         <button>
           <SendRoundedIcon /> Send
         </button>
-
       </div>
 
       {showComments && (

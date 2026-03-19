@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import "./Navbar.css";
 import { useRouter } from "next/navigation";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
-import { logout } from "@/redux/features/users/userSlice";
+import { logout, logoutThunk } from "@/redux/features/users/userSlice";
 
 import {
   AppBar,
@@ -50,24 +50,23 @@ export default function Navbar() {
   };
 
   const handleLogout = () => {
-    document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
-    dispatch(logout());
-    router.push("/home");
+    dispatch(logoutThunk());
+    router.push("/");
   };
 
-  useEffect(()=>{
-    if(userId){
+  useEffect(() => {
+    if (userId) {
       dispatch(getProfileThunk(userId));
     }
-  },[userId]);
+  }, [userId]);
 
   return (
     <AppBar
-  position="sticky"
-  elevation={0}
-  className="li-navbar"
-  sx={{ top: 0, zIndex: (theme) => theme.zIndex.appBar }}
->
+      position="sticky"
+      elevation={0}
+      className="li-navbar"
+      sx={{ top: 0, zIndex: (theme) => theme.zIndex.appBar }}
+    >
 
       <Toolbar className="li-toolbar">
 
@@ -146,77 +145,77 @@ export default function Navbar() {
               <Divider orientation="vertical" flexItem />
 
               <div className="li-profile" onClick={handleOpen}>
-                <Avatar sx={{ width: 28, height: 28, backgroundColor:'#0a66c2'}} src={currentUser?.profilePicture}/>
+                <Avatar sx={{ width: 28, height: 28, backgroundColor: '#0a66c2' }} src={currentProfile?.profilePicture} />
                 <ArrowDropDownIcon
                   sx={{ fontSize: 20, color: "#666", ml: "2px" }}
                 />
               </div>
 
               <Menu
-  anchorEl={anchorEl}
-  open={open}
-  onClose={handleClose}
-  anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-  transformOrigin={{ vertical: "top", horizontal: "right" }}
-  PaperProps={{ className: "li-profile-menu" }}
->
-  {/* Header */}
-  <div className="li-menu-header">
-    <Avatar
-      className="li-menu-avatar"
-      src={currentProfile?.profilePicture}
-    />
-    <div>
-      <Typography className="li-menu-name">
-        {currentProfile?.firstName || "User"}
-      </Typography>
-      <Typography className="li-menu-headline">
-        --
-      </Typography>
-    </div>
-  </div>
+                anchorEl={anchorEl}
+                open={open}
+                onClose={handleClose}
+                anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+                transformOrigin={{ vertical: "top", horizontal: "right" }}
+                PaperProps={{ className: "li-profile-menu" }}
+              >
+                {/* Header */}
+                <div className="li-menu-header">
+                  <Avatar
+                    className="li-menu-avatar"
+                    src={currentProfile?.profilePicture}
+                  />
+                  <div>
+                    <Typography className="li-menu-name">
+                      {currentProfile?.firstName || "User"}
+                    </Typography>
+                    <Typography className="li-menu-headline">
+                      --
+                    </Typography>
+                  </div>
+                </div>
 
-  {/* View Profile */}
-  <div className="li-view-profile-wrapper">
-    <Button
-      fullWidth
-      variant="outlined"
-      className="li-view-profile"
-      onClick={() => router.push("/profile")}
-    >
-      View profile
-    </Button>
-  </div>
+                {/* View Profile */}
+                <div className="li-view-profile-wrapper">
+                  <Button
+                    fullWidth
+                    variant="outlined"
+                    className="li-view-profile"
+                    onClick={() => router.push("/profile")}
+                  >
+                    View profile
+                  </Button>
+                </div>
 
-  <Divider />
+                <Divider />
 
-  {/* Account Section */}
-  <Typography className="li-menu-section">Account</Typography>
+                {/* Account Section */}
+                <Typography className="li-menu-section">Account</Typography>
 
-  <MenuItem>Try 1 month of Premium for ₹0</MenuItem>
-  <MenuItem>Settings & Privacy</MenuItem>
-  <MenuItem>Help</MenuItem>
-  <MenuItem>Language</MenuItem>
+                <MenuItem>Try 1 month of Premium for ₹0</MenuItem>
+                <MenuItem>Settings & Privacy</MenuItem>
+                <MenuItem>Help</MenuItem>
+                <MenuItem>Language</MenuItem>
 
-  <Divider />
+                <Divider />
 
-  {/* Manage Section */}
-  <Typography className="li-menu-section">Manage</Typography>
+                {/* Manage Section */}
+                <Typography className="li-menu-section">Manage</Typography>
 
-  <MenuItem>Posts & Activity</MenuItem>
-  <MenuItem>Job Posting Account</MenuItem>
+                <MenuItem>Posts & Activity</MenuItem>
+                <MenuItem>Job Posting Account</MenuItem>
 
-  <Divider />
+                <Divider />
 
-  <MenuItem
-    onClick={() => {
-      handleClose();
-      handleLogout();
-    }}
-  >
-    Sign out
-  </MenuItem>
-</Menu>
+                <MenuItem
+                  onClick={() => {
+                    handleClose();
+                    handleLogout();
+                  }}
+                >
+                  Sign out
+                </MenuItem>
+              </Menu>
             </>
           )}
 

@@ -2,7 +2,7 @@ import { logout } from "@/redux/features/users/userSlice";
 import axios from "axios";
 
 export const privateApi = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL,
+  baseURL: process.env.NEXT_PUBLIC_API_URL || process.env.NEXT_PUBLIC_API_URL2 || process.env.NEXT_PUBLIC_API_URL3 || process.env.NEXT_PUBLIC_API_URL4,
   withCredentials: true,
 });
 
@@ -14,16 +14,18 @@ export const injectStore = (_store: any) => {
 
 privateApi.interceptors.response.use(
   (response) => response,
-  
+
   (error) => {
     if (error.response?.status === 401) {
-    console.log("401 detected. Value of store variable is:", store);
-    if (store) {
-      store.dispatch(logout());
-    } else {
-      console.error("Logout failed: store is still undefined.");
+      document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
+      console.log("401 Error detected. The value of store is: ", store);
+
+      if (store) {
+        store.dispatch(logout());
+      } else {
+        console.error("Logout failed: store is still undefined.");
+      }
     }
-  }
     return Promise.reject(error);
   },
 );

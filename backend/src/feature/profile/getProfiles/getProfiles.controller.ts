@@ -9,7 +9,7 @@ export class GetProfilesController {
   @Get('getAll')
   getAll(
     @Query('page') page = 1,
-    @Query('limit') limit = 10,
+    @Query('limit') limit = 100,
   ) {
     return this.getProfileService.getAll({ page, limit });
   }

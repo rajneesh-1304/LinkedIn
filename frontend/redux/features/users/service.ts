@@ -43,13 +43,23 @@ export const registerUser = async (registerData: any) => {
   }
 }
 
-
-
 export const deleteUserr = async (id: any) => {
   try {
     await axios.patch(`${BASE_URL}/auth/delete/${id}`)
   } catch (err: any) {
     console.error('Error deleting users:', err);
     throw err?.response?.data || err.message;
+  }
+}
+
+export const logoutUser = async () => {
+  try {
+    const res = await axios.post(`${BASE_URL}/auth/logout`,
+      {},
+      { withCredentials: true }
+    );
+    return res.data;
+  } catch (err: any) {
+    throw err;
   }
 }

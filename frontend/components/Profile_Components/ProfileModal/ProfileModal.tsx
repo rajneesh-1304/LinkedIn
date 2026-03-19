@@ -13,13 +13,26 @@ type ProfileModalProps = {
   close: () => void;
 };
 
+const imageSchema = z
+  .any()
+  .refine((file: File) => file instanceof File, {
+    message: "File is required",
+  })
+  .refine((file: File) => file?.type.startsWith("image/"), {
+    message: "Only image files are allowed",
+  });
+
+
 const profileSchema = z.object({
   firstName: z.string().min(3, "Name must be at least 3 characters"),
   lastName: z.string().min(3, "Name must be at least 3 characters"),
   location: z.string().min(3, "Location must be at least 3 characters"),
-  image: z
-    .any()
-    .refine((file: File) => !!file, {
+  headline: z.string().min(3, "Headline must be at least 3 characters"),
+  bio: z.string().min(3, 'Bio must be atleast 3 characters'),
+  image: imageSchema.refine((file: File) => !!file, {
+      message: "Please upload one image only",
+    }),
+  backgroundImage: imageSchema.refine((file: File) => !!file, {
       message: "Please upload one image only",
     }),
 });
@@ -48,9 +61,14 @@ export default function ProfileModal({close }: ProfileModalProps) {
     formDataToSend.append("firstName", formData.firstName);
     formDataToSend.append("lastName", formData.lastName);
     formDataToSend.append("location", formData.location);
+    formDataToSend.append("headline", formData.headline);
+    formDataToSend.append('bio', formData.bio);
 
     if (formData.image) {
       formDataToSend.append("image", formData.image);
+    }
+    if(formData.backgroundImage) {
+      formDataToSend.append("backgroundImage", formData.backgroundImage);
     }
 
     try {
@@ -115,6 +133,26 @@ export default function ProfileModal({close }: ProfileModalProps) {
             </FormControl>
 
             <FormControl>
+              <TextField
+                label="Headline"
+                size="small"
+                {...register("headline")}
+                error={!!errors.headline}
+                helperText={errors.headline?.message}
+              />
+            </FormControl>
+
+            <FormControl>
+              <TextField
+                label="Bio"
+                size="small"
+                {...register("bio")}
+                error={!!errors.bio}
+                helperText={errors.bio?.message}
+              />
+            </FormControl>
+
+            <FormControl>
               <label className="upload-label">Upload Profile Image</label>
 
               <Controller
@@ -131,6 +169,25 @@ export default function ProfileModal({close }: ProfileModalProps) {
               />
 
               {errors.image && <p className="error-text">{errors.image.message as string}</p>}
+            </FormControl>
+
+            <FormControl>
+              <label className="upload-label">Upload Background Image</label>
+
+              <Controller
+                name="backgroundImage"
+                control={control}
+                defaultValue={null}
+                render={({ field }) => (
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => field.onChange(e.target.files?.[0] || null)}
+                  />
+                )}
+              />
+
+              {errors.backgroundImage && <p className="error-text">{errors.backgroundImage.message as string}</p>}
             </FormControl>
 
             <div className="modal_actions">

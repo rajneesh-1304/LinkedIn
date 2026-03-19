@@ -20,4 +20,8 @@ export class Profile {
   @IsString()
   @IsOptional()
   bio: string;
+
+  @IsString()
+  @IsOptional()
+  backgroundImage: string;
 }

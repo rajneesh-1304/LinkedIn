@@ -1,58 +1,68 @@
 .modal_overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background: rgba(0, 0, 0, 0.5);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
+  position: fixed;
+  inset: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: rgba(0, 0, 0, 0.45);
+  z-index: 1000;
 }
 
 .modal {
-    background: white;
-    padding: 2rem;
-    border-radius: 10px;
-    width: 400px;
-    max-width: 90%;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    gap: 10px;
+  width: 420px;
+  max-width: 92%;
+  background: #ffffff;
+  padding: 24px;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
 }
 
-.modal_form input,
-.modal_form textarea {
-    width: 100%;
-    margin-bottom: 1rem;
-    padding: 0.5rem;
+.modal h2 {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.modal_form {
+  width: 100%;
+}
+
+.modal_form .MuiFormControl-root {
+  width: 100%;
+}
+
+.upload-label {
+  font-size: 13px;
+  color: #555;
+  margin-bottom: 4px;
+}
+
+.modal_form input[type="file"] {
+  margin-top: 6px;
 }
 
 .modal_actions {
-    display: flex;
-    justify-content: center;
-    gap: 2rem;
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 16px;
 }
 
-.submit_btn {
-    background: #4CAF50;
-    color: white;
-    border: none;
-    padding: 0.5rem 1rem;
-    cursor: pointer;
+.modal_actions button:first-child {
+  background-color: #0a66c2;
 }
 
-.cancel_btn {
-    background: #f44336;
-    color: white;
-    border: none;
-    padding: 0.5rem 1rem;
-    cursor: pointer;
+.modal_actions button:first-child:hover {
+  background-color: #004182;
 }
 
-.error-text{
-    color:rgb(236, 74, 74);
+.modal_actions button:last-child {
+  color: #555;
+}
+
+.error-text {
+  font-size: 12px;
+  color: rgb(236, 74, 74);
+  margin-top: 4px;
 }

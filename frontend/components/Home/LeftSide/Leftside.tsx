@@ -23,7 +23,9 @@ const ProfileSidebar = () => {
 
       <div className="pro-card" onClick={() => router.push('/profile')}>
 
-        <div className="pro-cover"></div>
+        <div className="pro-cover">
+          <img className="pro-background" src={currentProfile?.backgroundImage}/>
+        </div>
 
         <div className="pro-info">
           <div className="pro-avatar"><img src={currentProfile?.profilePicture} alt="" /></div>
@@ -32,8 +34,8 @@ const ProfileSidebar = () => {
             {currentProfile?.firstName} {currentProfile?.lastName}
           </h3>
 
-          <p className="pro-location">
-            {currentProfile?.location}
+          <p className="profile-headline">
+            {currentProfile?.headline}
           </p>
 
           {/* <button className="experience-btn" onClick={setExperience(true)}> 

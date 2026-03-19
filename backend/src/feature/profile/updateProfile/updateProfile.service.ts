@@ -12,9 +12,11 @@ export class UpdateProfileService {
   constructor(private readonly dataSource: DataSource) { }
 
 
-  async updateProfile(id: string, userData: Profile, file: Express.Multer.File) {
+  async updateProfile(id: string, userData: Profile, file: Express.Multer.File, file2: Express.Multer.File) {
       const userRepo = this.dataSource.getRepository(User);
+      console.log(file)
       const imageUrls = `http://localhost:3001/uploads/${file?.filename}`;
+      const backgroundImage = `http://localhost:3001/uploads/${file2?.filename}`;
       await userRepo.update(
         { id },
         {
@@ -24,6 +26,7 @@ export class UpdateProfileService {
           location: userData.location ?? null,
           profilePicture: imageUrls ?? null,
           bio: userData.bio ?? null,
+          backgroundImage: backgroundImage ?? null,
         }
       );
       return {

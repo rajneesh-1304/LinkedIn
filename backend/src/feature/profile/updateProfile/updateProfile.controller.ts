@@ -1,6 +1,6 @@
 import { Controller, Post, Body, Res, Patch, Param, Get, Query, UseInterceptors, UploadedFiles, UploadedFile, UseGuards } from '@nestjs/common';
 import { FirebaseAuthGuard } from 'src/firebase-auth.guard';
-import { FileInterceptor } from '@nestjs/platform-express';
+import { FileFieldsInterceptor, FileInterceptor } from '@nestjs/platform-express';
 import { productImageStorage } from 'src/infra/multer/multer';
 import { Profile } from 'src/domain/DTO/profile';
 import { UpdateProfileService } from './updateProfile.service';
@@ -10,17 +10,41 @@ export class UpdateProfileController {
   constructor(private readonly updateService: UpdateProfileService) { }
 
   @UseGuards(FirebaseAuthGuard)
-    @Patch('update/:id')
-    @UseInterceptors(
-      FileInterceptor('image', {
+  @Patch('update/:id')
+  @UseInterceptors(
+    FileFieldsInterceptor(
+      [
+        { name: 'image', maxCount: 1 },
+        { name: 'backgroundImage', maxCount: 1 },
+      ],
+      {
         storage: productImageStorage,
-      }),
-    )
-    updateProfile(
-      @Param('id') id: string,
-      @Body() userData: Profile,
-      @UploadedFile() file?: Express.Multer.File,
-    ) {
-      return this.updateService.updateProfile(id, userData, file);
-    }
+        fileFilter: (req, file, cb) => {
+          if (!file.mimetype.startsWith('image/')) {
+            return cb(
+              new Error('Only image files are allowed'),
+              false,
+            );
+          }
+          cb(null, true);
+        },
+      },
+    ),
+  )
+  updateProfile(
+    @Param('id') id: string,
+    @Body() userData: Profile,
+    @UploadedFiles()
+    files: {
+      image?: Express.Multer.File[];
+      backgroundImage?: Express.Multer.File[];
+    },
+  ) {
+    return this.updateService.updateProfile(
+      id,
+      userData,
+      files?.image?.[0],
+      files?.backgroundImage?.[0],
+    );
+  }
 }

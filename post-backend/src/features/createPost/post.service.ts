@@ -105,12 +105,13 @@ async getPosts(userId: any) {
 
   try {
     const response = await axios.get('http://backend:3001/profile/getAll');
-    const users = response.data.user || response.data;
+    const users = response.data.user;
 
     const userMap = new Map();
     users.forEach((u: any) => {
       userMap.set(u.id, u);
     });
+    console.log(userMap, '----------------------------------------------------')
 
     const posts = await postRepo.find();
     const reposts = await repostRepo.find({

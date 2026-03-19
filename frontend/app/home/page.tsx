@@ -7,7 +7,7 @@ import Createpost from '@/components/Home/Createpost/Createpost'
 
 const Page = () => {
   return (
-    <div>
+    <div className='home-container'>
       <Navbar />
 
       <div className='lmr'>

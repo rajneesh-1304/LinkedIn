@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
-import { deleteUserr, loginUser, registerUser } from "./service";
+import { deleteUserr, loginUser, logoutUser, registerUser } from "./service";
 
 interface User {
   id: number;
@@ -53,6 +53,17 @@ export const deleteUserThunk = createAsyncThunk(
   }
 )
 
+export const logoutThunk = createAsyncThunk(
+  'auth/logout',
+  async (_, { rejectWithValue }) => {
+    try {
+      return await logoutUser();
+    } catch (err: any) {
+      return rejectWithValue(err.response.data.message);
+    }
+  }
+)
+
 
 const usersSlice = createSlice({
   name: "auth",
@@ -72,7 +83,7 @@ const usersSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      
+
       .addCase(registerThunk.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -95,7 +106,22 @@ const usersSlice = createSlice({
       .addCase(loginThunk.rejected, (state, action) => {
         // state.loading = false;
         state.error = String(action.payload) || "Login failed";
-      });
+      })
+      .addCase(logoutThunk.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(logoutThunk.fulfilled, (state, action: PayloadAction<any>) => {
+        console.log(action.payload, 'fkjlasdjkfl;jkasldjkflajksldflskdlfalsjdkflajksl')
+        state.currentUser = null;
+        state.loading = false;
+        state.error = null;
+      })
+      .addCase(logoutThunk.rejected, (state, action) => {
+        // state.loading = false;
+        state.error = String(action.payload) || "Login failed";
+      })
+
 
   },
 });
