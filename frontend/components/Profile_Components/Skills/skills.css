@@ -1,0 +1,55 @@
+.header {
+  max-width: 900px;
+}
+
+.inner-header {
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+}
+
+.heading {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 15px;
+}
+
+.skills-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.skill-chip {
+  padding: 8px 14px;
+  border-radius: 20px;
+  background-color: #eef3f8;
+  color: #333;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: default;
+  transition: all 0.2s ease;
+  border: 1px solid transparent;
+}
+
+.skill-chip:hover {
+  background-color: #e2ecf7;
+  border: 1px solid #0a66c2;
+  color: #0a66c2;
+}
+
+.no-skills {
+  font-size: 14px;
+  color: #777;
+}
+
+@media (max-width: 600px) {
+  .skills-container {
+    gap: 8px;
+  }
+
+  .skill-chip {
+    font-size: 13px;
+    padding: 6px 12px;
+  }
+}

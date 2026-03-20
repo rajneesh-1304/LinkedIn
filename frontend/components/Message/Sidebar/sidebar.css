@@ -1,0 +1,61 @@
+.sidebarr {
+  border-right: 1px solid #e0e0e0;
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar-header {
+  padding: 16px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.sidebar-search {
+  margin: 0 16px 10px;
+  padding: 6px 10px;
+  display: flex;
+  gap: 8px;
+  background: #eef3f8;
+  border-radius: 6px;
+}
+
+.sidebar-search input {
+  border: none;
+  background: transparent;
+  outline: none;
+  width: 100%;
+}
+
+.sidebar-users {
+  overflow-y: auto;
+}
+
+.sidebar-user {
+  padding: 10px 16px;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  cursor: pointer;
+}
+
+.sidebar-user:hover {
+  background: #f3f2ef;
+}
+
+.sidebar-user.active {
+  background: #eef3f8;
+}
+
+.avatar-wrapper {
+  position: relative;
+}
+
+.online-dot {
+  width: 10px;
+  height: 10px;
+  background: #2eb67d;
+  border-radius: 50%;
+  position: absolute;
+  bottom: 2px;
+  right: 2px;
+}

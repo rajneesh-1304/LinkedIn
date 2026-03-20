@@ -30,6 +30,12 @@ export class User {
     @Column({nullable:true})
     backgroundImage: string;
 
+    @Column({default: 0})
+    totalFollowers: number;
+
+    @Column({default: 0})
+    totalConnections: number;
+
     @CreateDateColumn()
     createdAt: Date;
 

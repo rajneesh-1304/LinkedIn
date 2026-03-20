@@ -6,8 +6,23 @@
 }
 
 .inner-profile{
-    padding-top: 20px;
     display: flex;
     flex-direction: column;
-    gap: 2vh;
+    gap: 3vh;
+    padding: 10px;
+}
+
+.skills-container.empty {
+  border: 2px dashed #d0d7de;
+  padding: 20px;
+  border-radius: 10px;
+  justify-content: center;
+  align-items: center;
+  min-height: 80px;
+}
+
+.skills-container.empty .no-skills {
+  margin: auto;
+  text-align: center;
+  width: 100%;
 }

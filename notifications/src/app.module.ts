@@ -13,6 +13,6 @@ import { NotificationsModule } from './feature/notification.module';
     NotificationsModule,
   ],
   controllers: [AppController],
-  providers: [AppService]
+  providers: [AppService,]
 })
 export class AppModule {}

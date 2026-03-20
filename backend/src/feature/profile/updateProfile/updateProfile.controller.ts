@@ -1,15 +1,15 @@
 import { Controller, Post, Body, Res, Patch, Param, Get, Query, UseInterceptors, UploadedFiles, UploadedFile, UseGuards } from '@nestjs/common';
-import { FirebaseAuthGuard } from 'src/firebase-auth.guard';
 import { FileFieldsInterceptor, FileInterceptor } from '@nestjs/platform-express';
 import { productImageStorage } from 'src/infra/multer/multer';
 import { Profile } from 'src/domain/DTO/profile';
 import { UpdateProfileService } from './updateProfile.service';
+import { JwtAuthGuard } from 'src/jwt.guard';
 
 @Controller('profile')
 export class UpdateProfileController {
   constructor(private readonly updateService: UpdateProfileService) { }
 
-  @UseGuards(FirebaseAuthGuard)
+  @UseGuards(JwtAuthGuard)
   @Patch('update/:id')
   @UseInterceptors(
     FileFieldsInterceptor(

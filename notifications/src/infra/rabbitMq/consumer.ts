@@ -25,18 +25,19 @@ export class ConsumerService {
             if (!msg) return;
 
             const data = JSON.parse(msg.content.toString());
-            const isPresent = await inboxRepo.findOne({ where: { messageId: data.senderId, handler: data.handler } });
+            console.log(data)
+            const isPresent = await inboxRepo.findOne({ where: { messageId: data.id, handler: data.message.type } });
             if (!isPresent) {
                 const inbox = inboxRepo.create({
-                    messageId: data.senderId,
-                    handler: data.handler
+                    messageId: data.id,
+                    handler: data.message.type,
                 })
                 const notification = repo.create({
-                    senderId: data.senderId,
-                    senderName: data.senderName,
-                    receiverId: data.receiverId,
-                    type: data.type,
-                    message: data.message,
+                    senderId: data.message.senderId,
+                    senderName: data.message.senderName,
+                    receiverId: data.message.receiverId,
+                    type: data.message.type,
+                    message: data.message.message,
 
                 })
                 await inboxRepo.save(inbox);

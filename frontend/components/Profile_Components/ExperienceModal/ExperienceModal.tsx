@@ -73,7 +73,7 @@ export default function ExperienceModal({ close }: ExperienceModalProps) {
     return (
         <div className="modal_overlay">
             <div className="modal">
-                <h2>Add Education</h2>
+                <h2>Add Experience</h2>
 
                 <form onSubmit={handleSubmit(onSubmit)} className="modal_form">
                     <Box sx={{ display: "flex", flexDirection: "column", width: 350, gap: 1 }}>

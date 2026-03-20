@@ -1,13 +1,13 @@
 import { Controller, Post, Body, Res, Patch, Param, Get, Query, UseInterceptors, UploadedFiles, UploadedFile, UseGuards } from '@nestjs/common';
-import { FirebaseAuthGuard } from 'src/firebase-auth.guard';
 import { RemoveFollowService } from './removeFollowing.service';
+import { JwtAuthGuard } from 'src/jwt.guard';
 
 
 @Controller('follow')
 export class RemoveFollowController {
   constructor(private readonly removeFollowService: RemoveFollowService) { }
 
-  @UseGuards(FirebaseAuthGuard)
+  @UseGuards(JwtAuthGuard)
     @Post('remove/:id')
     removeFollowing(
       @Param('id') id: string,

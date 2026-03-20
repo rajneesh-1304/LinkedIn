@@ -1,14 +1,14 @@
 import { Controller, Post, Body, Res, Patch, Param, Get, Query, UseInterceptors, UploadedFiles, UploadedFile, UseGuards } from '@nestjs/common';
-import { FirebaseAuthGuard } from 'src/firebase-auth.guard';
 import { AddExperienceService } from './addExperience.service';
 import { ExperienceDto } from 'src/domain/DTO/experience';
+import { JwtAuthGuard } from 'src/jwt.guard';
 
 
 @Controller('profile')
 export class AddExperienceController {
   constructor(private readonly addExperienceService: AddExperienceService) { }
 
-  @UseGuards(FirebaseAuthGuard)
+  @UseGuards(JwtAuthGuard)
     @Post('experience/:id')
     addExperience(
       @Param('id') id: string,

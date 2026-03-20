@@ -1,12 +1,14 @@
-import { Body, Controller, Get, Param, Patch, Post, UploadedFiles, UseInterceptors } from "@nestjs/common";
+import { Body, Controller, Get, Param, Patch, Post, UploadedFiles, UseGuards, UseInterceptors } from "@nestjs/common";
 import { FilesInterceptor } from "@nestjs/platform-express";
 import { PostService } from "./post.service";
 import { productImageStorage } from "src/infra/multer/multer";
+import { JwtAuthGuard } from "src/jwt.guard";
 
 @Controller()
 export class PostController {
   constructor(private readonly postService: PostService) {}
 
+  @UseGuards(JwtAuthGuard)
   @UseInterceptors(
     FilesInterceptor('images', 5, { storage: productImageStorage })
   )
@@ -20,21 +22,25 @@ export class PostController {
     return this.postService.createPost(id, data, files);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get('getPost/:id')
   getPost(@Param() id:string){
     return this.postService.getPosts(id);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Patch('like/:id')
   addLike(@Param() id: any, @Body() userId: any){
     return this.postService.toggleLike(id, userId);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Patch('comment/:id')
   addComment(@Param() id: string, @Body() data: any){
     return this.postService.addComment(id, data);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Post('repost/:id')
   addRepost(@Param() id: string, 
   @Body('userId') userId: any,

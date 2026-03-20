@@ -17,6 +17,8 @@ import { GetPendingConnectionController } from './getPendingConnection/getPendin
 import { GetPendingConnectionService } from './getPendingConnection/getPendingService';
 import { PublisherService } from 'src/infra/rabbitMq/publisher';
 import { RabbitConnection } from 'src/infra/rabbitMq/rabbit.connection';
+import { JwtService } from '@nestjs/jwt';
+import { JwtAuthGuard } from 'src/jwt.guard';
 
 @Module({
   imports: [TypeOrmModule.forFeature([User]), ],
@@ -39,6 +41,7 @@ import { RabbitConnection } from 'src/infra/rabbitMq/rabbit.connection';
     GetPendingConnectionService,
     PublisherService,
     RabbitConnection
+    ,JwtAuthGuard, JwtService
   ],
 })
 export class ConnectionModule {}

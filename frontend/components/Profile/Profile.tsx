@@ -4,6 +4,7 @@ import Image from '../Profile_Components/ProfileImage/Image'
 import Education from '../Profile_Components/Education/Education'
 import Experience from '../Profile_Components/Experience/Experience'
 import './profile.css'
+import Skills from '../Profile_Components/Skills/skills'
 
 const Profile = () => {
   return (
@@ -15,6 +16,7 @@ const Profile = () => {
                 <div><Image/></div>
                 <div><Education/></div>
                 <div><Experience/></div>
+                <div><Skills/></div>
             </div>
         </div>
     </div>

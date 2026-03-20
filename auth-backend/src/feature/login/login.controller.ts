@@ -1,7 +1,8 @@
-import { Controller, Post, Body, Res, Patch, Param, Get, Query, UseInterceptors, UploadedFiles, UploadedFile, UseGuards } from '@nestjs/common';
+import { Controller, Post, Body, Res, } from '@nestjs/common';
 import { Response } from 'express';
 import { LoginUserDto } from 'src/domain/DTO/login';
 import { LoginService } from './login.service';
+const jwt = require('jsonwebtoken');
 
 @Controller('auth')
 export class LoginController {
@@ -14,12 +15,19 @@ export class LoginController {
   ) {
     const user = await this.loginService.login(loginDto);
 
-    res.cookie('token', loginDto.tokenId, {
+    const token = jwt.sign(
+      { userId: user.id }, 
+      process.env.JWT_SECRET,
+      { expiresIn: '8h' }
+    );
+
+    res.cookie('token', token, {
       httpOnly: true,
       secure: false,
       sameSite: 'lax',
       maxAge: 1000 * 60 * 60 * 8,
     });
+    console.log('------------------------------------------------------------------------------------------>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>')
 
     return {
       message: 'User logged in successfully',

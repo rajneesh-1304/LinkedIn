@@ -1,77 +1,77 @@
 .header {
-  width: 45vw;
+  max-width: 700px;
   background: white;
-  border-radius: 10px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.08);
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+  border-radius: 12px;
   overflow: hidden;
 }
 
 .cover-photo {
-  height: 180px;
+  width: 100%;
+  height: 200px;
+  background: #a0b4b7;
 }
 
-.cover{
-  height: 180px;
-  object-fit: fill;
-  width: 45vw;
-
+.cover {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .profile-section {
-  padding: 0 24px 24px 24px;
+  padding: 20px;
   position: relative;
 }
 
 .profile-image {
-  width: 140px;
-  height: 140px;
-  border-radius: 50%;
-  border: 4px solid white;
   position: absolute;
-  background-color: white;
-  z-index: 100;
-  top: -150px;
+  top: -60px;
+  left: 20px;
 }
 
-
+.prof-image {
+  width: 120px !important;
+  height: 120px !important;
+  border-radius: 50%;
+  border: 4px solid white;
+  background: gray;
+}
 
 .profile-info {
-  margin-top: 80px;
+  margin-top: 45px;
+  font-family: 'Times New Roman', Times, serif;
 }
 
 .name {
   font-size: 24px;
   font-weight: 600;
-  margin-bottom: 4px;
+  margin-bottom: 5px;
 }
 
 .headline {
   font-size: 16px;
   color: #555;
-  margin-bottom: 6px;
+  margin-bottom: 3px;
 }
 
 .location {
-  font-size: 14px;
-  color: gray;
-  margin-bottom: 16px;
+  font-size: 15px;
+  color: #777;
 }
 
 .buttons {
+  margin-top: 12px;
   display: flex;
   gap: 10px;
-  flex-wrap: wrap;
 }
 
 .primary-btn {
   background-color: #0a66c2;
   color: white;
   border: none;
-  padding: 3px 14px;
+  padding: 8px 16px;
   border-radius: 20px;
-  font-weight: 600;
   cursor: pointer;
+  font-weight: 500;
 }
 
 .primary-btn:hover {
@@ -82,27 +82,51 @@
   background-color: white;
   border: 1px solid #0a66c2;
   color: #0a66c2;
-  padding: 3px 14px;
+  padding: 8px 16px;
   border-radius: 20px;
-  font-weight: 600;
   cursor: pointer;
+  font-weight: 500;
 }
 
 .secondary-btn:hover {
-  background-color: rgba(10, 102, 194, 0.1);
+  background-color: #eef6ff;
 }
 
-.profile-image {
-  width: 120px;    
-  height: 120px;  
-  border-radius: 50%;
-  overflow: hidden;   
-  border: 2px solid #ccc
+.modal-wrapper {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: rgba(0, 0, 0, 0.3);
+  z-index: 9999;
+  animation: zoomIn 0.25s ease;
 }
 
-.profile-image img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;  
-  display: block;    
+@keyframes zoomIn {
+  from {
+    transform: scale(0.7);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@media (max-width: 600px) {
+  .profile-info {
+    margin-left: 0;
+    margin-top: 60px;
+  }
+
+  .profile-image {
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  .buttons {
+    flex-direction: column;
+    align-items: flex-start;
+  }
 }

@@ -1,13 +1,13 @@
 import { Controller, Post, Body, Res, Patch, Param, Get, Query, UseInterceptors, UploadedFiles, UploadedFile, UseGuards } from '@nestjs/common';
-import { FirebaseAuthGuard } from 'src/firebase-auth.guard';
 import { TotalFollowingService } from './getTotal.service';
+import { JwtAuthGuard } from 'src/jwt.guard';
 
 
 @Controller('follow')
 export class TotalFollowingController {
   constructor(private readonly totalFollowingService: TotalFollowingService) { }
 
-  @UseGuards(FirebaseAuthGuard)
+  @UseGuards(JwtAuthGuard)
     @Get('total/:id')
     getTotalFollowing(
       @Param('id') id: string,

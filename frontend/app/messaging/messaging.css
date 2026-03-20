@@ -1,0 +1,42 @@
+.contain{
+  background: #f3f2ef;
+  min-height: 100vh;    
+}
+
+.messaging-wrapper {
+  min-height: 100vh;
+  padding: 20px 0;
+}
+
+.messaging-container {
+  max-width: 1100px;
+  height: 80vh;
+  margin: auto;
+  margin-top: 20px;
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  background: #fff;
+  border-radius: 10px;
+  border: 1px solid #e0e0e0;
+  overflow: hidden;
+}
+
+@media (max-width: 900px) {
+  .messaging-container {
+    grid-template-columns: 1fr;
+    height: 90vh;
+  }
+}
+
+.messaging-container ::-webkit-scrollbar {
+  width: 6px;
+}
+
+.messaging-container ::-webkit-scrollbar-thumb {
+  background: #ccc;
+  border-radius: 10px;
+}
+
+.messaging-container ::-webkit-scrollbar-thumb:hover {
+  background: #999;
+}

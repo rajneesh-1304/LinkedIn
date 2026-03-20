@@ -1,13 +1,14 @@
 'use client';
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import './experience.css';
 import { getExperienceThunk } from '@/redux/features/profile/profileSlice';
+import ExperienceModal from '../ExperienceModal/ExperienceModal';
 
 const Experience = () => {
   const currentUser = useAppSelector(state => state.users.currentUser);
     const userId = currentUser?.id;
-  
+    const [isOpen, setIsOpen] = useState(false);
     const dispatch = useAppDispatch();
   
     const currentExperience = useAppSelector(
@@ -23,7 +24,10 @@ const Experience = () => {
     <div className="header">
       <div className="inner-header">
 
-        <div className='heading'>Experience</div>
+        <div className='heading'>
+          <span>Experience</span>
+          <span style={{fontSize:'15px', cursor:'pointer'}} onClick={()=>setIsOpen(true)}>➕</span>
+        </div>
 
         {currentExperience?.length > 0 && currentExperience.map((exp: any, index: number) => (
           <div className='box' key={index}>
@@ -36,7 +40,7 @@ const Experience = () => {
             </div>
 
             <div className='college'>
-              <h1 className='college-name'>{exp.compnay}</h1>
+              <h1 className='college-name'>{exp.company}</h1>
 
               <h2 className='college-degree'>{exp.position}</h2>
 
@@ -53,6 +57,11 @@ const Experience = () => {
         ))}
 
       </div>
+      {isOpen && (
+                    <ExperienceModal
+                      close={() => setIsOpen(false)}
+                    />
+                  )}
     </div>
   )
 }

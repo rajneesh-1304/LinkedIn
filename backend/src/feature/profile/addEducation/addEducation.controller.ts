@@ -1,14 +1,14 @@
 import { Controller, Post, Body, Res, Patch, Param, Get, Query, UseInterceptors, UploadedFiles, UploadedFile, UseGuards } from '@nestjs/common';
-import { FirebaseAuthGuard } from 'src/firebase-auth.guard';
 import { AddEducationService } from './addEducation.service';
 import { EducationDto } from 'src/domain/DTO/education';
+import { JwtAuthGuard } from 'src/jwt.guard';
 
 
 @Controller('profile')
 export class AddEducationController {
   constructor(private readonly addEducationService: AddEducationService) { }
 
-  @UseGuards(FirebaseAuthGuard)
+  @UseGuards(JwtAuthGuard)
     @Post('education/:id')
     addEducation(
       @Param('id') id: string,

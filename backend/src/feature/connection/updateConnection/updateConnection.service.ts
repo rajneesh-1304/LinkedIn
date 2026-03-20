@@ -4,56 +4,74 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { Connection, ConnectionStatus } from 'src/domain/entity/connection.entity';
+import { Outbox } from 'src/domain/entity/outbox.entity';
 import { User } from 'src/domain/entity/user.entity';
 import { PublisherService } from 'src/infra/rabbitMq/publisher';
 import { DataSource } from 'typeorm';
 
 @Injectable()
 export class UpdateConnectionService {
-  constructor(private readonly dataSource: DataSource, private readonly publishService: PublisherService) {}
+  constructor(
+    private readonly dataSource: DataSource,
+    private readonly publishService: PublisherService
+  ) {}
 
   async updateConnection(userId: string, otherUserId: string) {
     if (!userId || !otherUserId) {
       throw new BadRequestException('User is missing');
     }
 
-    const userRepo = this.dataSource.getRepository(User);
-    const connectionRepo = this.dataSource.getRepository(Connection);
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
 
-    const [user, otherUser] = await Promise.all([
-      userRepo.findOne({ where: { id: userId } }),
-      userRepo.findOne({ where: { id: otherUserId } }),
-    ]);
+    try {
+      const userRepo = queryRunner.manager.getRepository(User);
+      const connectionRepo = queryRunner.manager.getRepository(Connection);
+      const outboxRepo = queryRunner.manager.getRepository(Outbox);
 
-    if (!user) throw new NotFoundException('User not found');
-    if (!otherUser) throw new NotFoundException('Other user not found');
+      const user = await userRepo.findOne({ where: { id: userId } });
+      const otherUser = await userRepo.findOne({ where: { id: otherUserId } });
 
-    const connection = await connectionRepo.findOne({
-      where: [
-        { user: { id: userId }, requester: { id: otherUserId }, status: ConnectionStatus.PENDING },
-        { user: { id: otherUserId }, requester: { id: userId }, status: ConnectionStatus.PENDING },
-      ],
-    });
+      if (!user) throw new NotFoundException('User not found');
+      if (!otherUser) throw new NotFoundException('Other user not found');
 
-    if (!connection) {
-      throw new NotFoundException('Connection not found');
+      const connection = await connectionRepo.findOne({
+        where: [
+          { user: { id: userId }, requester: { id: otherUserId }, status: ConnectionStatus.PENDING },
+          { user: { id: otherUserId }, requester: { id: userId }, status: ConnectionStatus.PENDING },
+        ],
+      });
+
+      if (!connection) {
+        throw new NotFoundException('Connection not found');
+      }
+
+      connection.status = ConnectionStatus.CONNECTED;
+      await connectionRepo.save(connection);
+
+      const outbox = outboxRepo.create({
+        message: {
+          senderId: user.id,
+          senderName: user.firstName,
+          receiverId: otherUser.id,
+          type: 'CONNECTION_ACCEPT',
+          message: `${user.firstName} accepted your connection request`,
+        },
+      });
+
+      await outboxRepo.save(outbox);
+
+      await queryRunner.commitTransaction();
+
+      return {
+        message: `${user.firstName} accepted request of ${otherUser.firstName}`,
+      };
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+      throw error;
+    } finally {
+      await queryRunner.release();
     }
-
-    connection.status = ConnectionStatus.CONNECTED;
-    await connectionRepo.save(connection);
-    this.publishService.publish({
-      id: `${userId}_${otherUserId}`,
-      senderId: userId,
-      receiverId: otherUserId,
-      senderName: user.firstName,
-      type: 'REQUEST_ACCEPTED',
-      handler: 'ACCEPT_REQUEST',
-      message: `${user.firstName} accepted your request.`
-      
-    })
-
-    return {
-      message: `${user.firstName} accepted request of ${otherUser.firstName}`,
-    };
   }
 }

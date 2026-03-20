@@ -1,13 +1,15 @@
 'use client';
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import './education.css';
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { getEducationThunk } from '@/redux/features/profile/profileSlice';
+import EducationModal from '../EducationModal/EducationModal';
 
 const Education = () => {
 
   const currentUser = useAppSelector(state => state.users.currentUser);
-  const userId = currentUser?.id;
+  const userId = currentUser?.id; 
+  const [isOpen, setIsOpen] = useState(false);
 
   const dispatch = useAppDispatch();
 
@@ -25,7 +27,10 @@ const Education = () => {
     <div className="header">
       <div className="inner-header">
 
-        <div className='heading'>Education</div>
+        <div className='heading'>
+          <span>Education</span>
+          <span style={{fontSize:'15px', cursor:'pointer'}} onClick={()=>setIsOpen(true)}>➕</span>
+        </div>
 
         {currentEducation?.length > 0 && currentEducation.map((edu: any, index: number) => (
           <div className='box' key={index}>
@@ -55,6 +60,12 @@ const Education = () => {
         ))}
 
       </div>
+
+      {isOpen && (
+              <EducationModal
+                close={() => setIsOpen(false)}
+              />
+            )}
     </div>
   )
 }

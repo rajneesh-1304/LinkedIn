@@ -22,5 +22,6 @@ class AppController {
     PostModule
   ],
   controllers: [AppController],
+  providers: []
 })
 export class AppModule {}

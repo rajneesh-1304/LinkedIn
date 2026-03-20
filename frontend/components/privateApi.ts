@@ -1,4 +1,4 @@
-import { logout } from "@/redux/features/users/userSlice";
+import { logout, logoutThunk } from "@/redux/features/users/userSlice";
 import axios from "axios";
 
 export const privateApi = axios.create({
@@ -18,10 +18,9 @@ privateApi.interceptors.response.use(
   (error) => {
     if (error.response?.status === 401) {
       document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
-      console.log("401 Error detected. The value of store is: ", store);
 
       if (store) {
-        store.dispatch(logout());
+        store.dispatch(logoutThunk());
       } else {
         console.error("Logout failed: store is still undefined.");
       }

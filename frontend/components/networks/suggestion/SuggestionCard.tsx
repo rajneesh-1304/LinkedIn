@@ -37,6 +37,8 @@ interface User {
   headline?: string;
   profilePicture?: string;
   followersCount?: number;
+  backgroundImage: string;
+  totalFollowers: number;
 }
 
 interface SuggestionCardProps {
@@ -171,14 +173,20 @@ export default function SuggestionCard({ user, onRemove }: SuggestionCardProps) 
     checkFollowStatus();
     checkConnectionStatus();
   }, [currentUserId, userId]);
-
   return (
     <Paper elevation={1}>
       <Box
         sx={{
-          backgroundColor: "#1282f3",
           height: "80px",
           position: "relative",
+          backgroundImage: user?.backgroundImage
+            ? `url(${user?.backgroundImage})`
+            : "linear-gradient(135deg, #0a66c2, #1282f3)",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          backgroundRepeat: "no-repeat",
+          borderTopLeftRadius: "8px",
+          borderTopRightRadius: "8px",
         }}
       >
         <IconButton
@@ -204,6 +212,10 @@ export default function SuggestionCard({ user, onRemove }: SuggestionCardProps) 
 
         <Typography fontSize={13} color="text.secondary">
           {user.headline}
+        </Typography>
+
+        <Typography fontSize={13} color="text.secondary">
+          {user.totalFollowers} followers
         </Typography>
 
         <Button

@@ -11,6 +11,8 @@ import { TotalFollowingService } from './getTotal/getTotal.service';
 import { RemoveFollowService } from './removeFollowing/removeFollowing.service';
 import { PublisherService } from 'src/infra/rabbitMq/publisher';
 import { RabbitConnection } from 'src/infra/rabbitMq/rabbit.connection';
+import { JwtAuthGuard } from 'src/jwt.guard';
+import { JwtService } from '@nestjs/jwt';
 
 @Module({
   imports: [TypeOrmModule.forFeature([User]), ],
@@ -27,6 +29,7 @@ import { RabbitConnection } from 'src/infra/rabbitMq/rabbit.connection';
     RemoveFollowService,
     RabbitConnection,
     PublisherService
+    , JwtAuthGuard, JwtService
   ],
 })
 export class FollowModule {}

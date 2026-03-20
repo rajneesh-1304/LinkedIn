@@ -5,7 +5,7 @@ import { FirebaseAuthGuard } from './firebase-auth.guard';
 import { ProfileModule } from './feature/profile/profile.module';
 import { FollowModule } from './feature/following/following.module';
 import { ConnectionModule } from './feature/connection/connection.module';
-import { PublisherService } from './infra/rabbitMq/publisher';
+import { OutboxService } from './feature/services/outbox.service';
 
 @Controller()
 class AppController {
@@ -27,6 +27,6 @@ class AppController {
     ConnectionModule,    
   ],
   controllers: [AppController],
-  providers: []
+  providers: [OutboxService]
 })
 export class AppModule {}

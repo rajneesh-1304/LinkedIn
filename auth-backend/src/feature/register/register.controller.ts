@@ -2,6 +2,7 @@ import { Controller, Post, Body, Res } from '@nestjs/common';
 import { Response } from 'express';
 import { RegisterService } from './register.service';
 import { PublisherService } from 'src/infra/rabbitMq/publisher';
+const jwt = require('jsonwebtoken');
 
 @Controller('auth')
 export class RegisterController {
@@ -13,7 +14,13 @@ export class RegisterController {
     @Res({ passthrough: true }) res: Response,) {
     const user = await this.registerService.register(userData);
 
-    res.cookie('token', userData.tokenId, {
+    const token = jwt.sign(
+      { userId: user.id }, 
+      process.env.JWT_SECRET,
+      { expiresIn: '8h' }
+    );
+
+    res.cookie('token', token, {
       httpOnly: true,
       secure: false,
       sameSite: 'lax',

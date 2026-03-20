@@ -7,6 +7,7 @@ import {
 import { DataSource } from 'typeorm';
 import { Follow } from 'src/domain/entity/follow.entity';
 import { User } from 'src/domain/entity/user.entity';
+import { Outbox } from 'src/domain/entity/outbox.entity';
 
 @Injectable()
 export class AddFollowingService {
@@ -21,32 +22,58 @@ export class AddFollowingService {
       throw new BadRequestException("You can't follow yourself");
     }
 
-    const userRepo = this.dataSource.getRepository(User);
-    const followRepo = this.dataSource.getRepository(Follow);
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
 
-    const [user, follower] = await Promise.all([
-      userRepo.findOne({ where: { id: userId } }),
-      userRepo.findOne({ where: { id: followerId } }),
-    ]);
+    try {
+      const userRepo = queryRunner.manager.getRepository(User);
+      const followRepo = queryRunner.manager.getRepository(Follow);
+      const outboxRepo = queryRunner.manager.getRepository(Outbox);
 
-    if (!user) throw new NotFoundException('User not found');
-    if (!follower) throw new NotFoundException('Follower not found');
+      const user = await userRepo.findOne({ where: { id: userId } });
+      const follower = await userRepo.findOne({ where: { id: followerId } });
 
-    const existingFollow = await followRepo.findOne({
-      where: [
-        { user: { id: userId }, follower: { id: followerId } },
-      ],
-    });
+      if (!user) throw new NotFoundException('User not found');
+      if (!follower) throw new NotFoundException('Follower not found');
 
-    if (existingFollow) {
-      throw new ConflictException('You are already following this user');
+      const existingFollow = await followRepo.findOne({
+        where: [{ user: { id: userId }, follower: { id: followerId } }],
+      });
+
+      if (existingFollow) {
+        throw new ConflictException('You are already following this user');
+      }
+
+      const follow = followRepo.create({
+        user,
+        follower,
+      });
+
+      const outbox = outboxRepo.create({
+        message: {
+          senderId: follower.id,
+          senderName: follower.firstName,
+          receiverId: user.id,
+          type: 'FOLLOW',
+          message: `${follower.firstName} started following you`,
+        },
+      });
+
+      await followRepo.save(follow);
+      await outboxRepo.save(outbox);
+      await userRepo.increment({ id: userId }, 'totalFollowers', 1);
+
+      await queryRunner.commitTransaction();
+
+      return {
+        message: `${follower.firstName} started following ${user.firstName}`,
+      };
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+      throw error;
+    } finally {
+      await queryRunner.release();
     }
-
-    const follow = followRepo.create({ user, follower });
-    await followRepo.save(follow);
-
-    return {
-      message: `${follower.firstName} started following ${user.firstName}`,
-    };
   }
 }
