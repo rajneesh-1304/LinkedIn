@@ -5,7 +5,7 @@ import './experience.css';
 import { getExperienceThunk } from '@/redux/features/profile/profileSlice';
 import ExperienceModal from '../ExperienceModal/ExperienceModal';
 
-const Experience = () => {
+const Experience = ({id}: {id: any}) => {
   const currentUser = useAppSelector(state => state.users.currentUser);
     const userId = currentUser?.id;
     const [isOpen, setIsOpen] = useState(false);
@@ -16,17 +16,17 @@ const Experience = () => {
     );
   
     useEffect(() => {
-      if (userId) {
-        dispatch(getExperienceThunk(userId));
+      if (id) {
+        dispatch(getExperienceThunk(id));
       }
-    }, [userId, dispatch]);
+    }, [id, dispatch]);
   return (
     <div className="header">
       <div className="inner-header">
 
         <div className='heading'>
           <span>Experience</span>
-          <span style={{fontSize:'15px', cursor:'pointer'}} onClick={()=>setIsOpen(true)}>➕</span>
+          {id === userId ? <span style={{fontSize:'15px', cursor:'pointer'}} onClick={()=>setIsOpen(true)}>➕</span> : <></>}
         </div>
 
         {currentExperience?.length > 0 && currentExperience.map((exp: any, index: number) => (

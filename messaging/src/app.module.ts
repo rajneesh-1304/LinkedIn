@@ -1,10 +1,24 @@
-import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
+import { Module, Controller, Get, UseGuards } from '@nestjs/common';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { dataSourceOptions } from './data-source';
+import { MessageModule } from './feature/connection/module';
+
+@Controller()
+class AppController {
+  @Get()
+  root() {
+    return { message: 'NestJS Backend is running!' };
+  }
+}
 
 @Module({
-  imports: [],
+  imports: [
+    TypeOrmModule.forRoot({
+      ...dataSourceOptions, 
+    }), 
+    MessageModule
+  ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: []
 })
 export class AppModule {}

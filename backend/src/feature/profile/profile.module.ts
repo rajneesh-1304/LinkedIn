@@ -18,11 +18,17 @@ import { UpdateProfileController } from './updateProfile/updateProfile.controlle
 import { UpdateProfileService } from './updateProfile/updateProfile.service';
 import { JwtService } from '@nestjs/jwt';
 import { JwtAuthGuard } from 'src/jwt.guard';
+import { AddSkillsController } from './addSkills/addSkills.controller';
+import { AddSkillsService } from './addSkills/addSkills.service';
+import { GetSkillsController } from './getSkills/getSkills.controller';
+import { GetSkillsService } from './getSkills/getSkills.service';
+import { GetAllSkillsController } from './getAllSkills/getAllSkills.controller';
+import { GetAllSkillsService } from './getAllSkills/getAllSkills.service';
 
 @Module({
   imports: [TypeOrmModule.forFeature([User])],
-  controllers: [AddEducationController, AddExperienceController, GetEducationController, GetExperienceController, GetProfileController, GetProfilesController, UpdateProfileController],
+  controllers: [AddEducationController, AddExperienceController, GetEducationController, GetExperienceController, GetProfileController, GetProfilesController, UpdateProfileController, AddSkillsController, GetSkillsController, GetAllSkillsController],
 
-  providers: [AddEducationService, AddExperienceService, GetEducationService, GetExperienceService, GetProfileService, GetProfilesService, RabbitConnection, UpdateProfileService, JwtAuthGuard, JwtService],
+  providers: [AddEducationService, AddExperienceService, GetEducationService, GetExperienceService, GetProfileService, GetProfilesService, RabbitConnection, UpdateProfileService, AddSkillsService, GetSkillsService, GetAllSkillsService, JwtAuthGuard, JwtService],
 })
 export class ProfileModule { }

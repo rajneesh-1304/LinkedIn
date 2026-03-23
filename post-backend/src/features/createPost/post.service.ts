@@ -111,8 +111,7 @@ async getPosts(userId: any) {
     users.forEach((u: any) => {
       userMap.set(u.id, u);
     });
-    console.log(userMap, '----------------------------------------------------')
-
+    
     const posts = await postRepo.find();
     const reposts = await repostRepo.find({
       relations: ["post"]

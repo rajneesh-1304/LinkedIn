@@ -21,8 +21,6 @@ export default function Sidebar({
   search,
   setSearch,
 }: any) {
-  const getAvatarUrl = (file?: string) =>
-    file ? `http://localhost:5000/uploads/${file}` : undefined;
 
   return (
     <div className="sidebarr">
@@ -64,7 +62,7 @@ export default function Sidebar({
               onClick={() => setSelectedUser(user)}
             >
               <div className="avatar-wrapper">
-                <Avatar src={getAvatarUrl(user.profilePicture)} />
+                <Avatar src={user.profilePicture} />
                 {user.auth?.isActive && <span className="online-dot" />}
               </div>
 

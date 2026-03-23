@@ -19,6 +19,8 @@ import { PublisherService } from 'src/infra/rabbitMq/publisher';
 import { RabbitConnection } from 'src/infra/rabbitMq/rabbit.connection';
 import { JwtService } from '@nestjs/jwt';
 import { JwtAuthGuard } from 'src/jwt.guard';
+import { GetConnectionByIdController } from './getConnectionById/getConnectionById.controller';
+import { GetConnectionByIdService } from './getConnectionById/getConnectionById.service';
 
 @Module({
   imports: [TypeOrmModule.forFeature([User]), ],
@@ -29,7 +31,8 @@ import { JwtAuthGuard } from 'src/jwt.guard';
     UpdateConnectionController,
     TotalConnectionController,
     GetTotalConnectionController,
-    GetPendingConnectionController
+    GetPendingConnectionController,
+    GetConnectionByIdController
   ],
   providers: [
     AddConnectionService,
@@ -40,7 +43,8 @@ import { JwtAuthGuard } from 'src/jwt.guard';
     GetConnectionService,
     GetPendingConnectionService,
     PublisherService,
-    RabbitConnection
+    RabbitConnection,
+    GetConnectionByIdService
     ,JwtAuthGuard, JwtService
   ],
 })

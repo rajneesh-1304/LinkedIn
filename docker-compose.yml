@@ -102,6 +102,28 @@ services:
       - ./notifications:/app
       - /app/node_modules
 
+  messaging:
+    build: 
+      context: ./messaging
+      dockerfile: Dockerfile
+    container_name: messaging-Linkedin
+    restart: always
+    ports:
+     - "3005:3005"
+    depends_on:
+      - db
+    environment:
+      PORT: ${PORT5}
+      DB_HOST: ${DB_HOST}
+      DB_PORT: ${DB_PORT}
+      DB_USER: ${DB_USER}
+      DB_PASS: ${DB_PASS}
+      DB_NAME: ${DB_NAME5}
+      RABBITMQ_URL: ${RABBITMQ_URL}
+    volumes:
+      - ./messaging:/app
+      - /app/node_modules
+
   post-backend:
     build:
       context: ./post-backend

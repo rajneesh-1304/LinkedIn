@@ -3,10 +3,11 @@ import { Education } from "./education.entity";
 import { Experience } from "./experience.entity";
 import { Follow } from "./follow.entity";
 import { Connection } from "./connection.entity";
+import { Skills } from "./skills.entity";
 
 @Entity('users')
 export class User {
-    @PrimaryColumn('uuid')
+    @PrimaryGeneratedColumn('uuid')
     id: string;
 
     @Column()
@@ -27,13 +28,13 @@ export class User {
     @Column({ nullable: true })
     bio: string;
 
-    @Column({nullable:true})
+    @Column({ nullable: true })
     backgroundImage: string;
 
-    @Column({default: 0})
+    @Column({ default: 0 })
     totalFollowers: number;
 
-    @Column({default: 0})
+    @Column({ default: 0 })
     totalConnections: number;
 
     @CreateDateColumn()
@@ -56,4 +57,12 @@ export class User {
 
     @OneToMany(() => Connection, (connection) => connection.user)
     receivedConnections: Connection[];
+
+    @ManyToMany(() => Skills, (skills) => skills.users)
+    @JoinTable({
+        name: "user_skills",
+        joinColumn: { name: "userId", referencedColumnName: "id" },
+        inverseJoinColumn: { name: "skillId", referencedColumnName: "id" }
+    })
+    skills: Skills[];
 }

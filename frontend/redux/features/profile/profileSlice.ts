@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { addEducation, addExperience, addProfile, fetchUsers, getEducation, getExperience, getProfile } from "./profileService";
+import { addEducation, addExperience, addProfile, addSkills, fetchAllSkills, fetchUsers, getConnectionById, getEducation, getExperience, getProfile, getSkills } from "./profileService";
 
 interface ProfileState {
   users: any[];
@@ -7,6 +7,9 @@ interface ProfileState {
   currentProfile: any ;
   currentEducation: any[];
   currentExperience: any[];
+  totalSkills: any[],
+  currentSkills: any[],
+  currentUserConnection: any[],
   loading: boolean;
   error: string | null;
 }
@@ -17,6 +20,9 @@ const initialState: ProfileState = {
   currentProfile: null,
   currentEducation: [],
   currentExperience: [],
+  currentSkills: [],
+  totalSkills: [],
+  currentUserConnection: [],
   loading: false,
   error: null,
 };
@@ -101,7 +107,61 @@ export const fetchUsersThunk = createAsyncThunk(
   }
 );
 
+export const getAllSkillsThunk = createAsyncThunk(
+  'skills/fetchAll',
+  async (
+    _,
+    { rejectWithValue }
+  ) => {
+    try {
+      return await fetchAllSkills();
+    } catch (err: any) {
+      return rejectWithValue(err?.message || 'Failed to fetch skills');
+    }
+  }
+);
 
+export const addSkillsThunk = createAsyncThunk(
+  'skills/addskills',
+  async (
+    {id, skills}: any,
+    { rejectWithValue }
+  ) => {
+    try {
+      return await addSkills(id, skills);
+    } catch (err: any) {
+      return rejectWithValue(err?.message || 'Failed to add skills');
+    }
+  }
+);
+
+export const getSkillsThunk = createAsyncThunk(
+  'skills/getskills',
+  async (
+    userId:any,
+    { rejectWithValue }
+  ) => {
+    try {
+      return await getSkills(userId);
+    } catch (err: any) {
+      return rejectWithValue(err?.message || 'Failed to fetch skills');
+    }
+  }
+);
+
+export const  getConnectionByIdThunk = createAsyncThunk(
+  'connection/byid',
+  async (
+    userId:any,
+    { rejectWithValue }
+  ) => {
+    try {
+      return await getConnectionById(userId);
+    } catch (err: any) {
+      return rejectWithValue(err?.message || 'Failed to fetch connectionby id');
+    }
+  }
+);
 
 const profileSlice = createSlice({
   name: "address",
@@ -189,6 +249,49 @@ const profileSlice = createSlice({
                 state.users = user;
                 state.loading = false;
               })
+        .addCase(getAllSkillsThunk.fulfilled, (state, action)=>{
+            state.loading = false;
+            state.totalSkills = action.payload;
+        })
+        .addCase(getAllSkillsThunk.pending, (state)=>{
+            state.loading=true;
+            state.error=null;
+        })
+        .addCase(getAllSkillsThunk.rejected, (state, action)=> {
+            state.error = action.error.message || 'Education details fetching Failed';
+        })
+        .addCase(getSkillsThunk.fulfilled, (state, action)=>{
+            state.loading = false;
+            state.currentSkills = action.payload;
+        })
+        .addCase(getSkillsThunk.pending, (state)=>{
+            state.loading=true;
+            state.error=null;
+        })
+        .addCase(getSkillsThunk.rejected, (state, action)=> {
+            state.error = action.error.message || 'Education details fetching Failed';
+        })
+        .addCase(addSkillsThunk.fulfilled, (state, action)=>{
+            state.loading = false;
+        })
+        .addCase(addSkillsThunk.pending, (state)=>{
+            state.loading=true;
+            state.error=null;
+        })
+        .addCase(addSkillsThunk.rejected, (state, action)=> {
+            state.error = action.error.message || 'Education details fetching Failed';
+        })
+        .addCase(getConnectionByIdThunk.fulfilled, (state, action)=>{
+            state.loading = false;
+            state.currentUserConnection = action.payload.users;
+        })
+        .addCase(getConnectionByIdThunk.pending, (state)=>{
+            state.loading=true;
+            state.error=null;
+        })
+        .addCase(getConnectionByIdThunk.rejected, (state, action)=> {
+            state.error = action.error.message || 'Education details fetching Failed';
+        })
 
 
   },

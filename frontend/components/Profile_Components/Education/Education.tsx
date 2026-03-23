@@ -5,7 +5,7 @@ import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { getEducationThunk } from '@/redux/features/profile/profileSlice';
 import EducationModal from '../EducationModal/EducationModal';
 
-const Education = () => {
+const Education = ({id}: {id: any}) => {
 
   const currentUser = useAppSelector(state => state.users.currentUser);
   const userId = currentUser?.id; 
@@ -18,10 +18,10 @@ const Education = () => {
   );
 
   useEffect(() => {
-    if (userId) {
-      dispatch(getEducationThunk(userId));
+    if (id) {
+      dispatch(getEducationThunk(id));
     }
-  }, [userId, dispatch]);
+  }, [id, dispatch]);
 
   return (
     <div className="header">
@@ -29,7 +29,7 @@ const Education = () => {
 
         <div className='heading'>
           <span>Education</span>
-          <span style={{fontSize:'15px', cursor:'pointer'}} onClick={()=>setIsOpen(true)}>➕</span>
+          {id === userId ? <span style={{fontSize:'15px', cursor:'pointer'}} onClick={()=>setIsOpen(true)}>➕</span> : <></>}
         </div>
 
         {currentEducation?.length > 0 && currentEducation.map((edu: any, index: number) => (

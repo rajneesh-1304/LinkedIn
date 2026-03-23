@@ -7,6 +7,7 @@ import { Outbox } from './domain/entity/outbox.entity';
 import { Follow } from './domain/entity/follow.entity';
 import { Connection } from './domain/entity/connection.entity';
 import { Inbox } from './domain/entity/inbox.entity';
+import { Skills } from './domain/entity/skills.entity';
 
 dotenv.config();
 
@@ -18,7 +19,7 @@ const rawDataSourceOptions = {
   password: process.env.DB_PASS,
   database: process.env.DB_NAME,
   synchronize: false,
-  entities: [User, Education, Experience, Outbox, Follow, Connection, Inbox],
+  entities: [User, Education, Experience, Outbox, Follow, Connection, Skills, Inbox],
   migrations: ['dist/infra/migrations/*.js'],
   seeds: ['dist/seeds/**/*.js'],
   logging: true,

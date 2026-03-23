@@ -181,7 +181,7 @@ export default function Navbar() {
                     fullWidth
                     variant="outlined"
                     className="li-view-profile"
-                    onClick={() => router.push("/profile")}
+                    onClick={() => router.push(`/profile/${userId}`)}
                   >
                     View profile
                   </Button>

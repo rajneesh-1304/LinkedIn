@@ -17,7 +17,7 @@ export class GetNotificationsService {
       throw new BadRequestException('User is missing');
     }
     
-    const notifications = await notificationRepo.find({ where: { receiverId: id } });
+    const notifications = (await notificationRepo.find({ where: { receiverId: id }, order: {createdAt: 'DESC'} }))
     return {
       notifications
     }
