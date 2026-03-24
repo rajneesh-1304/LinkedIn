@@ -34,6 +34,7 @@ export const getSocket = () => {
   if (!socket && typeof window !== "undefined") {
     socket = io("http://localhost:3005", {
       autoConnect: false,
+      withCredentials: true
     });
   }
 

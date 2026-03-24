@@ -152,3 +152,15 @@ export const getConnectionById = async (id: any) => {
     throw error?.response?.data || error.message;
   }
 }
+
+export const getProfileBySearchTerm = async (searchValue: any) => {
+  try {
+    const res = await privateApi.get(`${BASE_URL}/profile/search?searchTerm=${searchValue}`,{
+      withCredentials: true,
+    })
+    return res.data;
+  } catch (error:any) {
+    console.log('Error in fetchin searched profiles', error);
+    throw error?.response?.data || error.message;
+  }
+}

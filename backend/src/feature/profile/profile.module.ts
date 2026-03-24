@@ -24,11 +24,13 @@ import { GetSkillsController } from './getSkills/getSkills.controller';
 import { GetSkillsService } from './getSkills/getSkills.service';
 import { GetAllSkillsController } from './getAllSkills/getAllSkills.controller';
 import { GetAllSkillsService } from './getAllSkills/getAllSkills.service';
+import { GetProfileBySearchController } from './getProfileBySearch/getProfileBySearch.controller';
+import { GetProfileBySearchService } from './getProfileBySearch/getProfileBySearch.service';
 
 @Module({
   imports: [TypeOrmModule.forFeature([User])],
-  controllers: [AddEducationController, AddExperienceController, GetEducationController, GetExperienceController, GetProfileController, GetProfilesController, UpdateProfileController, AddSkillsController, GetSkillsController, GetAllSkillsController],
+  controllers: [AddEducationController, AddExperienceController, GetEducationController, GetExperienceController, GetProfileController, GetProfilesController, UpdateProfileController, AddSkillsController, GetSkillsController, GetAllSkillsController, GetProfileBySearchController],
 
-  providers: [AddEducationService, AddExperienceService, GetEducationService, GetExperienceService, GetProfileService, GetProfilesService, RabbitConnection, UpdateProfileService, AddSkillsService, GetSkillsService, GetAllSkillsService, JwtAuthGuard, JwtService],
+  providers: [AddEducationService, AddExperienceService, GetEducationService, GetExperienceService, GetProfileService, GetProfilesService, RabbitConnection, UpdateProfileService, AddSkillsService, GetSkillsService, GetAllSkillsService, GetProfileBySearchService, JwtAuthGuard, JwtService],
 })
 export class ProfileModule { }

@@ -28,11 +28,13 @@ import WorkIcon from "@mui/icons-material/Work";
 import ChatIcon from "@mui/icons-material/Chat";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
-import { getProfileThunk } from "@/redux/features/profile/profileSlice";
+import { getProfileThunk, getUserBySearchTermThunk } from "@/redux/features/profile/profileSlice";
 
 export default function Navbar() {
 
   const router = useRouter();
+  const [searchTerm, setSearchTerm] = useState("");
+  const [dropDown, setDropDown] = useState(false);
   const dispatch = useAppDispatch();
   const currentUser = useAppSelector((state) => state.users.currentUser);
   const userId = currentUser?.id;
@@ -40,6 +42,7 @@ export default function Navbar() {
 
   const [anchorEl, setAnchorEl] = useState<HTMLDivElement | null>(null);
   const open = Boolean(anchorEl);
+  const searchUsers = useAppSelector(state => state.profile.searchUsers);
 
   const handleOpen = (event: React.MouseEvent<HTMLDivElement>) => {
     setAnchorEl(event.currentTarget as HTMLDivElement);
@@ -59,6 +62,12 @@ export default function Navbar() {
       dispatch(getProfileThunk(userId));
     }
   }, [userId]);
+
+  useEffect(() => {
+    if (userId) {
+      dispatch(getUserBySearchTermThunk(searchTerm));
+    }
+  }, [searchTerm]);
 
   return (
     <AppBar
@@ -81,8 +90,19 @@ export default function Navbar() {
 
           <div className="li-search">
             <SearchIcon className="li-search-icon" />
-            <InputBase placeholder="Search" className="li-search-input" />
+            <InputBase placeholder="Search" className="li-search-input" onChange={(e) => {setSearchTerm(e.target.value)
+              setDropDown(true);
+            }} />
+
           </div>
+          {dropDown && searchUsers && searchUsers.length > 0
+            ? 
+            searchUsers.map((s) => (
+              <p className="dropdown"  key={s.id} onClick={()=>router.push(`/profile/${s.id}`)}>{s.firstName}</p>
+            ))
+            : 
+            <></>
+          }
 
         </Box>
 

@@ -5,10 +5,10 @@ import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { getEducationThunk } from '@/redux/features/profile/profileSlice';
 import EducationModal from '../EducationModal/EducationModal';
 
-const Education = ({id}: {id: any}) => {
+const Education = ({ id }: { id: any }) => {
 
   const currentUser = useAppSelector(state => state.users.currentUser);
-  const userId = currentUser?.id; 
+  const userId = currentUser?.id;
   const [isOpen, setIsOpen] = useState(false);
 
   const dispatch = useAppDispatch();
@@ -29,10 +29,10 @@ const Education = ({id}: {id: any}) => {
 
         <div className='heading'>
           <span>Education</span>
-          {id === userId ? <span style={{fontSize:'15px', cursor:'pointer'}} onClick={()=>setIsOpen(true)}>➕</span> : <></>}
+          {id === userId ? <span style={{ fontSize: '15px', cursor: 'pointer' }} onClick={() => setIsOpen(true)}>➕</span> : <></>}
         </div>
 
-        {currentEducation?.length > 0 && currentEducation.map((edu: any, index: number) => (
+        {currentEducation?.length > 0 ? (currentEducation.map((edu: any, index: number) => (
           <div className='box' key={index}>
 
             <div className='image'>
@@ -57,15 +57,17 @@ const Education = ({id}: {id: any}) => {
             </div>
 
           </div>
-        ))}
+        ))) : (
+          <p className="no-skills">No education added yet</p>
+        )}
 
       </div>
 
       {isOpen && (
-              <EducationModal
-                close={() => setIsOpen(false)}
-              />
-            )}
+        <EducationModal
+          close={() => setIsOpen(false)}
+        />
+      )}
     </div>
   )
 }

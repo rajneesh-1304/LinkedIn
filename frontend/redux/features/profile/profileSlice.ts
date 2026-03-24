@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { addEducation, addExperience, addProfile, addSkills, fetchAllSkills, fetchUsers, getConnectionById, getEducation, getExperience, getProfile, getSkills } from "./profileService";
+import { addEducation, addExperience, addProfile, addSkills, fetchAllSkills, fetchUsers, getConnectionById, getEducation, getExperience, getProfile, getProfileBySearchTerm, getSkills } from "./profileService";
 
 interface ProfileState {
   users: any[];
@@ -12,6 +12,7 @@ interface ProfileState {
   currentUserConnection: any[],
   loading: boolean;
   error: string | null;
+  searchUsers: any[];
 }
 
 const initialState: ProfileState = {
@@ -23,6 +24,7 @@ const initialState: ProfileState = {
   currentSkills: [],
   totalSkills: [],
   currentUserConnection: [],
+  searchUsers: [],
   loading: false,
   error: null,
 };
@@ -163,6 +165,20 @@ export const  getConnectionByIdThunk = createAsyncThunk(
   }
 );
 
+export const getUserBySearchTermThunk = createAsyncThunk(
+  'profile/search/searchValue',
+  async (
+    searchValue: any,
+    { rejectWithValue }
+  ) => {
+    try {
+      return await getProfileBySearchTerm(searchValue);
+    } catch (err: any) {
+      return rejectWithValue(err?.message || 'Failed to fetch connectionby id');
+    }
+  }
+)
+
 const profileSlice = createSlice({
   name: "address",
   initialState,
@@ -290,6 +306,17 @@ const profileSlice = createSlice({
             state.error=null;
         })
         .addCase(getConnectionByIdThunk.rejected, (state, action)=> {
+            state.error = action.error.message || 'Education details fetching Failed';
+        })
+        .addCase(getUserBySearchTermThunk.fulfilled, (state, action:any)=>{
+            state.loading = false;
+            state.searchUsers = action.payload.user;
+        })
+        .addCase(getUserBySearchTermThunk.pending, (state)=>{
+            state.loading=true;
+            state.error=null;
+        })
+        .addCase(getUserBySearchTermThunk.rejected, (state, action)=> {
             state.error = action.error.message || 'Education details fetching Failed';
         })
 

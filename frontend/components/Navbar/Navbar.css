@@ -240,3 +240,7 @@
 .MuiMenuItem-root:hover {
   background-color: #f3f2ef !important;
 }
+
+.dropdown{
+  background-color: black;
+}

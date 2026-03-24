@@ -5,7 +5,6 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { adminAuth } from './firebaseAdmin';
-import { refreshIdToken } from './refreshToken';
 
 @Injectable()
 export class FirebaseAuthGuard implements CanActivate {
@@ -24,12 +23,6 @@ export class FirebaseAuthGuard implements CanActivate {
       return true;
     } catch (error) {
       if (refreshToken) {
-        const newTokens = await refreshIdToken(refreshToken);
-        token = newTokens.idToken;
-
-        request.res.cookie('token', newTokens.idToken, { httpOnly: true });
-        request.res.cookie('refreshToken', newTokens.refreshToken, { httpOnly: true });
-
         const decodedToken = await adminAuth.verifyIdToken(token);
         request.user = decodedToken;
         return true;
