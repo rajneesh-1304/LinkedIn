@@ -41,6 +41,7 @@ export default function Notifications() {
   useEffect(()=>{
     dispatch(getNotificationThunk({userId}));
   },[]);
+  console.log(noti, '------->>>>');
   const handleChange = (
     event: React.MouseEvent<HTMLElement>,
     newFilter: string
@@ -116,7 +117,7 @@ export default function Notifications() {
               >
 
                 <Avatar
-                  
+                  src={notification.senderImage}
                 />
 
                 <Box>

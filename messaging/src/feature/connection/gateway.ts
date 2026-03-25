@@ -24,7 +24,7 @@ interface AuthenticatedSocket extends Socket {
 @WebSocketGateway({
   cors: {
     origin: 'http://localhost:3000',
-    credentials: true,
+    credential: true,
   },
 })
 export class MessageGateway

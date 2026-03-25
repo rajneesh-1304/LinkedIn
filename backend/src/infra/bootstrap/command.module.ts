@@ -12,6 +12,6 @@ import { ConsumerService } from '../rabbitMq/consumer';
   }), 
   OutboxModule
 ],
-  providers: [ConsumerCommand, ConsumerService, RabbitConnection, ],
+  providers: [ConsumerCommand, ConsumerService, RabbitConnection],
 })
-export class Command { }
+export class Command {}

@@ -54,6 +54,7 @@ export class AddFollowingService {
         message: {
           senderId: follower.id,
           senderName: follower.firstName,
+          senderImage: follower.profilePicture,
           receiverId: user.id,
           type: 'FOLLOW',
           message: `${follower.firstName} started following you`,

@@ -29,10 +29,8 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${geistSans.variable} antialiased`}>
         <StoreProvider>
-          <AuthRedirect>
             {/* <NavbarWrapper /> */}
             {children}
-          </AuthRedirect>
         </StoreProvider>
       </body>
     </html>

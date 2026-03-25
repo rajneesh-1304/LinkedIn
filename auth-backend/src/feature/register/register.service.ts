@@ -31,7 +31,6 @@ export class RegisterService {
 
             const user = queryRunner.manager.create(User, {
                 email: data.email,
-                firstName: data.firstName,
             });
 
             await queryRunner.manager.save(user);
@@ -39,7 +38,6 @@ export class RegisterService {
             const outbox = queryRunner.manager.create(Outbox, {
                 message: {
                     id: user.id,
-                    firstName: user.firstName,
                     email: user.email,
                 }
             })
@@ -49,7 +47,6 @@ export class RegisterService {
             await queryRunner.commitTransaction();
             return {
                 id: user.id,
-                firstName: user.firstName,
                 email: user.email,
             };
         } catch (error) {

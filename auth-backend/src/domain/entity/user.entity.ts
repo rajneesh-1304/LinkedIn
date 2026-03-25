@@ -1,6 +1,6 @@
 import { Column, CreateDateColumn, Entity, JoinTable, ManyToMany, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
-@Entity('users')
+@Entity('auth')
 export class User {
     @PrimaryGeneratedColumn('uuid')
     id: string;
@@ -8,10 +8,6 @@ export class User {
     @Column()
     email: string;
 
-    @Column()
-    firstName: string;
-
     @CreateDateColumn()
     createdAt: Date;
-
 }

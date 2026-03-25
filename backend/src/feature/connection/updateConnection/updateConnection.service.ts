@@ -54,6 +54,7 @@ export class UpdateConnectionService {
         message: {
           senderId: user.id,
           senderName: user.firstName,
+          senderImage: user.profilePicture,
           receiverId: otherUser.id,
           type: 'CONNECTION_ACCEPT',
           message: `${user.firstName} accepted your connection request`,

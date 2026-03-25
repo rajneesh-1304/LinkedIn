@@ -15,6 +15,7 @@ import axios from "axios";
 
 import Navbar from "../../components/Navbar/Navbar";
 import LeftSidebar from "../../components/Home/LeftSide/Leftside";
+import RightSidebar from "@/components/Home/RightSide/Rightside";
 
 
 interface Notification {
@@ -98,7 +99,7 @@ export default function Notifications() {
                 textAlign: "center",
               }}
             >
-              <Typography>No notifications yet</Typography>
+              <Typography>No jobs details found yet</Typography>
             </Paper>
 
           ) : (
@@ -154,6 +155,8 @@ export default function Notifications() {
           )}
 
         </Box>
+
+        <RightSidebar/>
 
       </Box>
 

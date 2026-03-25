@@ -26,11 +26,6 @@ import {
 
 
 const RegisterUserSchema = z.object({
-  name: z
-    .string()
-    .trim()
-    .min(3, "Name must be at least 3 characters")
-    .regex(/^[A-Za-z ]+$/, "Name can only contain letters and spaces"),
 
   email: z.string().trim().min(1, "Email is required").email("Enter a valid email address"),
 
@@ -43,17 +38,6 @@ const RegisterUserSchema = z.object({
     .regex(/[a-z]/, "Must contain at least one lowercase letter")
     .regex(/[0-9]/, "Must contain at least one number")
     .regex(/[!@#$%^&*]/, "Must contain at least one special character"),
-
-  // role: z.string("role is required"),
-
-  //   confirmPassword: z
-  //     .string()
-  //     .min(1, "Confirm password is required"),
-  // }).refine((data: any) => data.password === data.confirmPassword, {
-  //   message: "Passwords do not match",
-  //   path: ["confirmPassword"],
-
-
 });
 
 type RegisterFormInputs = z.infer<typeof RegisterUserSchema>;
@@ -131,29 +115,18 @@ export default function RegisterForm() {
     try {
       const response = await createUserWithEmailAndPassword(auth, data.email, data.password);
       const user = response.user;
-      const docRef = await addDoc(collection(db, 'auth'), {
-        name: data.name,
-        email: data.email,
-        password: data.password,
-        // role: data.role
-      });
       const token = await user.getIdToken();
 
       const dat = {
         email: data.email,
-        firstName: data.name,
         tokenId: token,
-        // role: data.role
       }
       await dispatch(registerThunk(dat)).unwrap();
-      setSnackbarMessage('User created successfully!');
-      setSnackbarOpen(true);
       setTimeout(() => {
-        router.push('/');
+        router.push('/users');
       }, 1200);
     }
     catch (err: any) {
-      console.log(err, 'error is here ')
       const message =
         err?.message?.includes("email-already-in-use") ||
           err?.response?.data?.message?.includes("Email already registered")
@@ -175,10 +148,8 @@ export default function RegisterForm() {
   } = useForm({
     resolver: zodResolver(RegisterUserSchema),
     defaultValues: {
-      name: "",
       email: "",
       password: "",
-      // role: ""
     },
   });
 
@@ -192,18 +163,8 @@ export default function RegisterForm() {
     <div className="main-form">
       <form className="formm" onSubmit={handleSubmit(onSubmit)}>
         <h1 className='register_heading' >Create Account</h1>
-        <Box sx={{ display: "flex", flexDirection: "column", width: 320, gap: 1, mt: 1, padding: 1, paddingBottom: 1 }}>
+        <Box sx={{ display: "flex", flexDirection: "column", width: 320, gap: 2, mt: 1, padding: 1, paddingBottom: 1 }}>
 
-          <FormControl variant="standard">
-            <TextField
-              label="Name"
-              variant="outlined"
-              size="small"
-              {...register("name", { required: "Name is required" })}
-              error={!!errors.name}
-              helperText={errors.name ? errors.name.message : ""}
-            />
-          </FormControl>
 
           <FormControl variant="standard">
             <TextField
@@ -236,58 +197,6 @@ export default function RegisterForm() {
               }}
             />
           </FormControl>
-
-          {/* <FormControl variant="standard" fullWidth>
-            <TextField
-              label="Confirm Password"
-              size="small"
-              type={showConfirmPassword ? "text" : "password"}
-              variant="outlined"
-              {...register("confirmPassword")}
-              error={!!errors.confirmPassword}
-              helperText={errors.confirmPassword?.message}
-              InputProps={{
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <IconButton onClick={handleToggleConfirmPassword} edge="end">
-                      {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
-                    </IconButton>
-                  </InputAdornment>
-                ),
-              }}
-            />
-          </FormControl> */}
-
-          {/* <FormControl
-            fullWidth
-            variant="outlined"
-            size="small"
-            error={!!errors.role}
-          >
-            <InputLabel
-              id="demo-simple-select-standard-label"
-              sx={{ fontSize: 14 }}
-            >
-              Role
-            </InputLabel>
-
-            <Select
-              labelId="demo-simple-select-standard-label"
-              id="demo-simple-select-standard"
-              {...register("role")}
-              sx={{
-                minHeight: 32,
-                paddingY: "2px",
-              }}
-            >
-              <MenuItem value="ADMIN">OWNER</MenuItem>
-              <MenuItem value="CUSTOMER">CUSTOMER</MenuItem>
-            </Select>
-
-            <FormHelperText sx={{ fontSize: 11, mt: 0.5 }}>
-              {errors.role?.message}
-            </FormHelperText>
-          </FormControl> */}
 
           <Typography className="terms-text" style={{ fontSize: '12px', marginTop: '15px', marginBottom: "10px", textAlign: 'center' }}>
             By clicking Continue, you agree to LinkedIn’s

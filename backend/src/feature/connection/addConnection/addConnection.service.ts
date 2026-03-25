@@ -65,6 +65,7 @@ export class AddConnectionService {
           senderId: requester.id,
           senderName: requester.firstName,
           receiverId: user.id,
+          senderImage: requester.profilePicture,
           type: 'CONNECTION_REQUEST',
           message: `${requester.firstName} sent you a connection request`,
         },

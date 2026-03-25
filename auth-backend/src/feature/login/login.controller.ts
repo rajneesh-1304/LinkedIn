@@ -27,8 +27,7 @@ export class LoginController {
       sameSite: 'lax',
       maxAge: 1000 * 60 * 60 * 8,
     });
-    console.log('------------------------------------------------------------------------------------------>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>')
-
+    
     return {
       message: 'User logged in successfully',
       user,

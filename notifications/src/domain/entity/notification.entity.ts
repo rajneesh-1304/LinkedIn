@@ -21,6 +21,9 @@ export class Notification{
     @Column()
     senderName: string;
 
+    @Column({nullable: true})
+    senderImage: string;
+
     @Column({default: false})
     isSeen: boolean;
 

@@ -25,10 +25,10 @@ export const fetchPost = async (userId:any) =>{
   }
 }
 
-export const toggleLike = async (id: string, userId: string) =>{
+export const toggleLike = async (id: string, data: any) =>{
   try {
     const url =`${BASE_URL}/like/${id}`;
-     const res = await axios.patch(url, {userId: userId}, {
+     const res = await axios.patch(url, {data}, {
         withCredentials: true,
       },);
     return res.data;
@@ -50,10 +50,10 @@ export const addComment = async (id: string, data: any) =>{
 }
 
 
-export const isLiked = async (id: string, userId: string) => {
+export const isLiked = async (id: string, data: string) => {
   try {
     const url =`${BASE_URL}/isLiked/${id}`;
-     const res = await axios.patch(url, {userId}, {
+     const res = await axios.patch(url, {data}, {
         withCredentials: true,
       },);
     return res.data;

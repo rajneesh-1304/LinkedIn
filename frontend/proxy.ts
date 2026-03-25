@@ -1,7 +1,7 @@
-import { NextResponse } from 'next/server';
-import type { NextRequest } from 'next/server';
-
-export function middleware(request: NextRequest) {
+import { NextResponse } from 'next/server'
+import type { NextRequest } from 'next/server'
+ 
+export function proxy(request: NextRequest) {
   const token = request.cookies.get('token')?.value;
   const isAuthenticated = !!token;
 
@@ -22,7 +22,8 @@ export function middleware(request: NextRequest) {
 
   return NextResponse.next();
 }
-
+ 
+ 
 export const config = {
   matcher: [
     '/',
@@ -35,4 +36,4 @@ export const config = {
     '/profile/:path*',
     '/messaging/:path*',
   ],
-};
+}

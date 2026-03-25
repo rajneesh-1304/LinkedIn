@@ -33,7 +33,6 @@ export class ConsumerService {
                 })
                 const user = repo.create({
                     id: data.message.id,
-                    firstName: data.message.firstName,
                 })
                 await inboxRepo.save(inbox);
                 await repo.save(user);

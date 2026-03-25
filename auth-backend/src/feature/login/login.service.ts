@@ -26,7 +26,6 @@ export class LoginService {
 
       return {
         id: user.id,
-        firstName: user.firstName,
         email: user.email,
       };
     } catch (error) {

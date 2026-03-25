@@ -46,9 +46,9 @@ export const fetchPostThunk = createAsyncThunk(
 
 export const toggleLikeThunk = createAsyncThunk(
   'patch/toggleLike',
-  async ({id, userId}: any, { rejectWithValue }) => {
+  async ({id, data}: any, { rejectWithValue }) => {
     try {
-      return await toggleLike(id, userId);
+      return await toggleLike(id, data);
     } catch (err: any) {
       return rejectWithValue(err.message);
     }
@@ -69,9 +69,9 @@ export const addCommentThunk = createAsyncThunk(
 
 export const isLikedThunk = createAsyncThunk(
   'get/isLiked',
-  async ({id, userId}: any, { rejectWithValue }) => {
+  async ({id, data}: any, { rejectWithValue }) => {
     try {
-      return await isLiked(id, userId);
+      return await isLiked(id, data);
     } catch (err: any) {
       return rejectWithValue(err.message);
     }

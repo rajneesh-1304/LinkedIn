@@ -33,6 +33,8 @@ const PostCard = ({ post }: Props) => {
   const currentUser = useAppSelector((state) => state.users.currentUser);
   const currentProfile = useAppSelector((state) => state.profile.currentProfile);
   const userId = currentUser?.id;
+  const userName = currentProfile?.firstName;
+  const userImage = currentProfile?.profilePicture;
 
   const dispatch = useAppDispatch();
 
@@ -67,7 +69,11 @@ const PostCard = ({ post }: Props) => {
     setLikesCount(prev ? likesCount - 1 : likesCount + 1);
 
     try {
-      await dispatch(toggleLikeThunk({ id: actualPost.id, userId })).unwrap();
+      await dispatch(toggleLikeThunk({ id: actualPost.id, data: {
+        userId: userId,
+        userName: userName,
+        userImage: userImage
+      } })).unwrap();
     } catch {
       setLiked(prev);
       setLikesCount(actualPost.likesCount || 0);
@@ -111,7 +117,8 @@ const PostCard = ({ post }: Props) => {
       await dispatch(
         addCommentThunk({
           id: actualPost.id,
-          data: { userId, text: commentText }
+          data: { userId, text: commentText, userName: userName,
+        userImage: userImage }
         })
       ).unwrap();
     } catch {

@@ -244,3 +244,14 @@
 .dropdown{
   background-color: black;
 }
+
+.dropdown-content {
+  position: absolute;
+  background-color: #ffffff;
+  color: black;
+  min-width: 23%;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  z-index: 1;
+  border-radius:'10px';  
+  background: #eef3f8;
+}

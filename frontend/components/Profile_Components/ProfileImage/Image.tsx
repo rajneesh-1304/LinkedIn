@@ -70,14 +70,17 @@ const Image = ({ id }: { id: any }) => {
     return (
         <div className="header">
             <div className="cover-photo">
-                <img
-                    src={
-                        profile?.backgroundImage ||
-                        "https://images.unsplash.com/photo-1503264116251-35a269479413"
-                    }
-                    alt="cover"
-                    className='cover'
-                />
+                {profile?.backgroundImage ?
+                    <img
+                        src={
+                            profile?.backgroundImage ||
+                            "https://images.unsplash.com/photo-1503264116251-35a269479413"
+                        }
+                        alt="cover"
+                        className='cover'
+                    /> : <></>
+
+                }
             </div>
 
             <div className="profile-section">

@@ -29,6 +29,7 @@ import ChatIcon from "@mui/icons-material/Chat";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import { getProfileThunk, getUserBySearchTermThunk } from "@/redux/features/profile/profileSlice";
+import { FaArrowRight } from "react-icons/fa";
 
 export default function Navbar() {
 
@@ -65,7 +66,12 @@ export default function Navbar() {
 
   useEffect(() => {
     if (userId) {
-      dispatch(getUserBySearchTermThunk(searchTerm));
+      setTimeout(() => {
+        dispatch(getUserBySearchTermThunk(searchTerm));
+      }, 1000);
+    }
+    if(!searchTerm){
+      setDropDown(false);
     }
   }, [searchTerm]);
 
@@ -88,7 +94,7 @@ export default function Navbar() {
             in
           </div>
 
-          <div className="li-search">
+          <div className="li-search ">
             <SearchIcon className="li-search-icon" />
             <InputBase placeholder="Search" className="li-search-input" onChange={(e) => {setSearchTerm(e.target.value)
               setDropDown(true);
@@ -98,7 +104,9 @@ export default function Navbar() {
           {dropDown && searchUsers && searchUsers.length > 0
             ? 
             searchUsers.map((s) => (
-              <p className="dropdown"  key={s.id} onClick={()=>router.push(`/profile/${s.id}`)}>{s.firstName}</p>
+              <p className="dropdown-content" style={{position:'absolute', marginLeft:"40px",
+                marginTop: "66px", display:"flex", gap:"2px", borderRadius: "20px", padding:"2px", paddingLeft:"20px", alignItems:"center"
+              }}  key={s.id} onClick={()=>router.push(`/profile/${s.id}`)}><FaArrowRight /> {s.firstName}</p>
             ))
             : 
             <></>
