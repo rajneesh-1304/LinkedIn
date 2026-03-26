@@ -5,7 +5,8 @@ import Post from '@/components/PostModal/Post';
 import PostCard from '@/components/PostCard/PostCard';
 import { fetchPostThunk } from '@/redux/features/post/postSlice';
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
-import { fetchUsersThunk } from '@/redux/features/profile/profileSlice';
+import { fetchUsersThunk, getProfileThunk } from '@/redux/features/profile/profileSlice';
+import { Avatar } from '@mui/material';
 
 const Createpost = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -15,7 +16,6 @@ const Createpost = () => {
   const currentUser = useAppSelector(state => state.users.currentUser);
   const id: any = currentUser?.id;
   const currentProfile = useAppSelector(state => state.profile.currentProfile);
-  console.log(posts, 'hello i am post', users);
   // useEffect(() => {
   //   if (!currentProfile) {
   //     const formDataToSend={
@@ -31,14 +31,14 @@ const Createpost = () => {
 
   useEffect(() => {
     dispatch(fetchPostThunk(id));
+    dispatch(getProfileThunk(id));
     dispatch(fetchUsersThunk({ page: "1", limit: "10" }));
   }, [])
 
   return (
     <div className='container'>
       <div className='topSection'>
-        <div className='avatar'>R</div>
-
+        <Avatar className="avatar" sx={{ width: 50, height: 50, backgroundColor: '#0a66c2' }} src={currentProfile?.profilePicture ? currentProfile?.profilePicture : ""} />
         <input
           type="click"
           placeholder="Start a post"

@@ -5,6 +5,9 @@ import "./leftside.css";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { useRouter } from "next/navigation";
 import { getProfileThunk } from "@/redux/features/profile/profileSlice";
+import {
+  Avatar,
+} from "@mui/material";
 
 const ProfileSidebar = () => {
   const [experience, setExperience] = useState(false);
@@ -28,7 +31,7 @@ const ProfileSidebar = () => {
         </div>
 
         <div className="pro-info">
-          <div className="pro-avatar"><img src={currentProfile?.profilePicture} alt="" /></div>
+          <Avatar className="pro-avatar" sx={{ width: 80, height: 80, backgroundColor: '#0a66c2' }} src={currentProfile?.profilePicture ? currentProfile?.profilePicture : ""} />
 
           <h3 className="pro-name">
             {currentProfile?.firstName} {currentProfile?.lastName}

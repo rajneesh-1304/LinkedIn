@@ -8,9 +8,11 @@ import { RegisterController } from './register/register.controller';
 import { RegisterService } from './register/register.service';
 import { PublisherService } from 'src/infra/rabbitMq/publisher';
 import { LogoutController } from './logout/logout.controller';
+import { SingInWithGoogleController } from './signinwithgoogle/signin.controller';
+import { SignInWithGoogleService } from './signinwithgoogle/signin.service';
 @Module({
   imports: [TypeOrmModule.forFeature([User])],
-  controllers: [LoginController, RegisterController, LogoutController],
-  providers: [LoginService, RegisterService, RabbitConnection, PublisherService],
+  controllers: [LoginController, RegisterController, LogoutController, SingInWithGoogleController],
+  providers: [LoginService, RegisterService, RabbitConnection, PublisherService, SignInWithGoogleService],
 })
 export class UserModule {}

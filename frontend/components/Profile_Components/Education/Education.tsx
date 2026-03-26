@@ -18,10 +18,12 @@ const Education = ({ id }: { id: any }) => {
   );
 
   useEffect(() => {
+    console.log('education')
+    if(!id) return;
     if (id) {
       dispatch(getEducationThunk(id));
     }
-  }, [id, dispatch]);
+  }, []);
 
   return (
     <div className="header">

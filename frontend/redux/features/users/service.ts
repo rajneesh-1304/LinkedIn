@@ -63,3 +63,24 @@ export const logoutUser = async () => {
     throw err;
   }
 }
+
+export const signInWithGoogle = async (singInData: any) => {
+  try {
+    const res = await axios.post(`${BASE_URL}/auth/signin`,
+      {
+        email: singInData.email,
+        tokenId: singInData.tokenId,
+        firstName: singInData.firstName
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        withCredentials: true,
+      },
+    );
+    return res.data;
+  } catch (err: any) {
+    throw err;
+  }
+}

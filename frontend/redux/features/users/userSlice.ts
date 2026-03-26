@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
-import { deleteUserr, loginUser, logoutUser, registerUser } from "./service";
+import { deleteUserr, loginUser, logoutUser, registerUser, signInWithGoogle } from "./service";
 
 interface User {
   id: number;
@@ -64,6 +64,17 @@ export const logoutThunk = createAsyncThunk(
   }
 )
 
+export const signInWithGoogleThunk = createAsyncThunk(
+  'auth/signin',
+  async (userData: any, { rejectWithValue }) => {
+    try {
+      return await signInWithGoogle(userData);
+    } catch (err: any) {
+      return rejectWithValue(err.response.data.message);
+    }
+  }
+)
+
 
 const usersSlice = createSlice({
   name: "auth",
@@ -93,6 +104,18 @@ const usersSlice = createSlice({
         state.currentUser = action.payload.user;
       })
       .addCase(registerThunk.rejected, (state, action) => {
+        state.error = action.error.message || "Registration failed";
+      })
+      .addCase(signInWithGoogleThunk.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(signInWithGoogleThunk.fulfilled, (state, action) => {
+        state.loading = false;
+        console.log(action.payload, '\\\\\\\------')
+        state.currentUser = action.payload.user;
+      })
+      .addCase(signInWithGoogleThunk.rejected, (state, action) => {
         state.error = action.error.message || "Registration failed";
       })
       .addCase(loginThunk.pending, (state) => {

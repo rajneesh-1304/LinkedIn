@@ -164,3 +164,16 @@ export const getProfileBySearchTerm = async (searchValue: any) => {
     throw error?.response?.data || error.message;
   }
 }
+
+export const addProfileFirst = async (userData: any) => {
+  try {
+    const url = `${BASE_URL}/profile/add`
+    const res = await privateApi.post(url, userData, {
+      withCredentials: true,
+    });
+    return res.data;
+  } catch (error) {
+    console.error("Error in Reigstering User:", error);
+    throw error;
+  }
+}

@@ -34,7 +34,6 @@ import { FaArrowRight } from "react-icons/fa";
 export default function Navbar() {
 
   const router = useRouter();
-  const [searchTerm, setSearchTerm] = useState("");
   const [dropDown, setDropDown] = useState(false);
   const dispatch = useAppDispatch();
   const currentUser = useAppSelector((state) => state.users.currentUser);
@@ -62,18 +61,18 @@ export default function Navbar() {
     if (userId) {
       dispatch(getProfileThunk(userId));
     }
-  }, [userId]);
+  }, []);
 
-  useEffect(() => {
-    if (userId) {
-      setTimeout(() => {
-        dispatch(getUserBySearchTermThunk(searchTerm));
-      }, 1000);
-    }
-    if(!searchTerm){
-      setDropDown(false);
-    }
-  }, [searchTerm]);
+  // useEffect(() => {
+  //   if (userId) {
+  //     setTimeout(() => {
+  //       dispatch(getUserBySearchTermThunk(searchTerm));
+  //     }, 1000);
+  //   }
+  //   if(!searchTerm){
+  //     setDropDown(false);
+  //   }
+  // }, []);
 
   return (
     <AppBar
@@ -96,9 +95,9 @@ export default function Navbar() {
 
           <div className="li-search ">
             <SearchIcon className="li-search-icon" />
-            <InputBase placeholder="Search" className="li-search-input" onChange={(e) => {setSearchTerm(e.target.value)
+            {/* <InputBase placeholder="Search" className="li-search-input" onChange={(e) => {setSearchTerm(e.target.value)
               setDropDown(true);
-            }} />
+            }} /> */}
 
           </div>
           {dropDown && searchUsers && searchUsers.length > 0
@@ -237,7 +236,7 @@ export default function Navbar() {
 
                 <MenuItem
                   onClick={() => {
-                    handleClose();
+                    // handleClose();
                     handleLogout();
                   }}
                 >

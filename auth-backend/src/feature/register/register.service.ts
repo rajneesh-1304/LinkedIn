@@ -17,7 +17,7 @@ export class RegisterService {
         await queryRunner.connect();
         await queryRunner.startTransaction();
         try {
-            const decodedToken = await adminAuth.verifyIdToken(data.tokenId);
+            const decodedToken = await adminAuth.verifyIdToken(data.token);
             const email = decodedToken.email;
             if (!email) throw new UnauthorizedException('Invalid token, no email found');
 

@@ -6,11 +6,10 @@ import { JwtAuthGuard } from 'src/jwt.guard';
 import { AddProfileService } from './addProfile.service';
 
 @Controller('profile')
-export class UpdateProfileController {
+export class AddProfileController {
   constructor(private readonly addProfileService: AddProfileService) { }
 
-  @UseGuards(JwtAuthGuard)
-  @Patch('update/:id')
+  @Post('add')
   @UseInterceptors(
     FileFieldsInterceptor(
       [
@@ -32,7 +31,6 @@ export class UpdateProfileController {
     ),
   )
   updateProfile(
-    @Param('id') id: string,
     @Body() userData: Profile,
     @UploadedFiles()
     files: {
@@ -41,7 +39,6 @@ export class UpdateProfileController {
     },
   ) {
     return this.addProfileService.addProfile(
-      id,
       userData,
       files?.image?.[0],
       files?.backgroundImage?.[0],

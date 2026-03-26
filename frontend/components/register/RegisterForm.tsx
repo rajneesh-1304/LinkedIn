@@ -14,9 +14,8 @@ import IconButton from "@mui/material/IconButton";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { auth, provider, db, gitProvider } from "../../app/config/firebase";
 import { createUserWithEmailAndPassword, signInWithPopup, signOut } from "firebase/auth";
-import { collection, addDoc, } from "firebase/firestore";
 import { useRouter } from "next/navigation";
-import { registerThunk } from "@//redux/features/users/userSlice";
+import { registerThunk, signInWithGoogleThunk } from "@//redux/features/users/userSlice";
 import { useAppDispatch } from "@//redux/hooks";
 import { FcGoogle } from "react-icons/fc";
 import {
@@ -42,7 +41,7 @@ const RegisterUserSchema = z.object({
 
 type RegisterFormInputs = z.infer<typeof RegisterUserSchema>;
 
-export default function RegisterForm() {
+export default function RegisterForm({setEmail, setPassword, setSecond}:  any) {
   const dispatch = useAppDispatch();
   const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
@@ -81,10 +80,10 @@ export default function RegisterForm() {
         firstName: user.displayName,
         tokenId: token,
       };
-
-      const registerResponse=await dispatch(registerThunk(registerData)).unwrap();
-
-      if (!registerThunk.fulfilled.match(registerResponse)) {
+      
+      const registerResponse=await dispatch(signInWithGoogleThunk(registerData)).unwrap();
+      
+      if (registerResponse.message === 'User signed in successfully') {
         await signOut(auth);
         throw new Error("Registration failed");
       } else {
@@ -113,28 +112,12 @@ export default function RegisterForm() {
     if (loading) return;
     setLoading(true);
     try {
-      const response = await createUserWithEmailAndPassword(auth, data.email, data.password);
-      const user = response.user;
-      const token = await user.getIdToken();
-
-      const dat = {
-        email: data.email,
-        tokenId: token,
-      }
-      await dispatch(registerThunk(dat)).unwrap();
-      setTimeout(() => {
-        router.push('/users');
-      }, 1200);
+      setEmail(data.email);
+      setPassword(data.password);
+      setSecond(true);
     }
     catch (err: any) {
-      const message =
-        err?.message?.includes("email-already-in-use") ||
-          err?.response?.data?.message?.includes("Email already registered")
-          ? "User already exists, please login"
-          : err?.message || "Registration failed";
-
-      setSnackbarMessage(message);
-      setSnackbarOpen(true);
+      console.log(err);
     }
     finally {
       setLoading(false);

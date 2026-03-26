@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { addEducation, addExperience, addProfile, addSkills, fetchAllSkills, fetchUsers, getConnectionById, getEducation, getExperience, getProfile, getProfileBySearchTerm, getSkills } from "./profileService";
+import { addEducation, addExperience, addProfile, addProfileFirst, addSkills, fetchAllSkills, fetchUsers, getConnectionById, getEducation, getExperience, getProfile, getProfileBySearchTerm, getSkills } from "./profileService";
 
 interface ProfileState {
   users: any[];
@@ -179,6 +179,17 @@ export const getUserBySearchTermThunk = createAsyncThunk(
   }
 )
 
+export const addProfileFirstThunk = createAsyncThunk(
+  "profile/adddd",
+  async (data:any, { rejectWithValue }) => {
+    try {
+      return await addProfileFirst(data);
+    } catch (err: any) {
+      return rejectWithValue(err.response);
+    }
+  }
+);
+
 const profileSlice = createSlice({
   name: "address",
   initialState,
@@ -200,11 +211,22 @@ const profileSlice = createSlice({
         .addCase(addProfileThunk.fulfilled, (state, action)=>{
             state.loading = false;
         })
-        .addCase(addProfileThunk.pending, (state)=>{
+        .addCase(addProfileThunk.pending, (state, action)=>{
             state.loading=true;
             state.error=null;
         })
         .addCase(addProfileThunk.rejected, (state, action)=> {
+            state.error = action.error.message || 'Profile Adding Failed';
+        })
+        .addCase(addProfileFirstThunk.fulfilled, (state, action)=>{
+            state.loading = false;
+            state.currentProfile = action.payload.user;
+        })
+        .addCase(addProfileFirstThunk.pending, (state, action)=>{
+            state.loading=true;
+            state.error=null;
+        })
+        .addCase(addProfileFirstThunk.rejected, (state, action)=> {
             state.error = action.error.message || 'Profile Adding Failed';
         })
         .addCase(getProfileThunk.fulfilled, (state, action)=>{

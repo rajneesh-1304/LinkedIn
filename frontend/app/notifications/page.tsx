@@ -41,7 +41,6 @@ export default function Notifications() {
   useEffect(()=>{
     dispatch(getNotificationThunk({userId}));
   },[]);
-  console.log(noti, '------->>>>');
   const handleChange = (
     event: React.MouseEvent<HTMLElement>,
     newFilter: string

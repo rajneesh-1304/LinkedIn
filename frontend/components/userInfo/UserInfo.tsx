@@ -12,6 +12,9 @@ import Snackbar from "@mui/material/Snackbar";
 import { useRouter } from "next/navigation";
 import { useAppDispatch, useAppSelector } from "@//redux/hooks";
 import { addProfileThunk, getProfileThunk } from "@/redux/features/profile/profileSlice";
+import { createUserWithEmailAndPassword, signOut } from "firebase/auth";
+import { auth } from "@/app/config/firebase";
+import { registerThunk } from "@/redux/features/users/userSlice";
 
 const userInfoSchema = z.object({
   firstName: z
@@ -29,13 +32,13 @@ const userInfoSchema = z.object({
 
 type UserFormInputs = z.infer<typeof userInfoSchema>;
 
-export default function UserForm() {
+export default function UserForm({ email, password }: any) {
   const dispatch = useAppDispatch();
   const router = useRouter();
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [loading, setLoading] = useState(false);
-  const currentUser = useAppSelector(state=> state.users.currentUser);
+  const currentUser = useAppSelector(state => state.users.currentUser);
   const userId = currentUser?.id;
 
   const handleClose = (event: React.SyntheticEvent | Event, reason?: string) => {
@@ -49,18 +52,21 @@ export default function UserForm() {
     if (loading) return;
     setLoading(true);
     try {
-      const formDataToSend = {
+      const response = await createUserWithEmailAndPassword(auth, email, password);
+      const user = response.user;
+      const token = await user.getIdToken();
+      const userData = {
+        token: token,
+        email: email,
         firstName: data.firstName,
         lastName: data.lastName
       }
-      await dispatch(addProfileThunk({userId, formDataToSend})).unwrap();
-      setSnackbarMessage('User created successfully!');
+      const response2 = await dispatch(registerThunk(userData)).unwrap();
+      setSnackbarMessage("Account created successfully");
       setSnackbarOpen(true);
-      setTimeout(() => {
-        router.push('/');
-      }, 1200);
-    }
-    catch (err: any) {
+      router.push('/')
+    } catch (err: any) {
+      await signOut(auth);
       console.log(err, 'error is here ')
       const message =
         err?.message?.includes("email-already-in-use") ||
@@ -124,7 +130,7 @@ export default function UserForm() {
           <Button fullWidth
             variant="contained"
             className="signin-btn" style={{ marginTop: '5px' }} type="submit" disabled={loading}>
-              {loading ? "Continue" : "Continue"}
+            {loading ? "Continue" : "Continue"}
           </Button>
         </Box>
 

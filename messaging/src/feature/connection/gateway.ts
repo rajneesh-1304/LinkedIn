@@ -15,18 +15,13 @@ import * as cookie from 'cookie';
 import { Message } from 'src/domain/entity/message';
 import { UnauthorizedException } from '@nestjs/common';
 
-interface AuthenticatedSocket extends Socket {
-  data: {
-    userid?: string;
-  };
-}
+// interface AuthenticatedSocket extends Socket {
+//   data: {
+//     userid?: string;
+//   };
+// }
 
-@WebSocketGateway({
-  cors: {
-    origin: 'http://localhost:3000',
-    credential: true,
-  },
-})
+@WebSocketGateway()
 export class MessageGateway
   implements OnGatewayConnection, OnGatewayDisconnect
 {
@@ -39,7 +34,7 @@ export class MessageGateway
   @WebSocketServer()
   server: Server;
 
-  async handleConnection(client: AuthenticatedSocket) {
+  async handleConnection(client: Socket) {
     try {
       const cookies = cookie.parse(client.handshake.headers.cookie || '');
       const token = cookies.token;
@@ -66,7 +61,7 @@ export class MessageGateway
     }
   }
 
-  async handleDisconnect(client: AuthenticatedSocket) {
+  async handleDisconnect(client: Socket) {
     const userid = client.data.userid;
 
     if (!userid) return;
@@ -81,7 +76,7 @@ export class MessageGateway
   @SubscribeMessage('joinRoom')
   async joinRoom(
     @MessageBody() roomId: string,
-    @ConnectedSocket() client: AuthenticatedSocket,
+    @ConnectedSocket() client:Socket,
   ) {
     await client.join(roomId);
   }
@@ -89,7 +84,7 @@ export class MessageGateway
   @SubscribeMessage('leaveRoom')
   async leaveRoom(
     @MessageBody() roomId: string,
-    @ConnectedSocket() client: AuthenticatedSocket,
+    @ConnectedSocket() client: Socket,
   ) {
     await client.leave(roomId);
   }
@@ -97,7 +92,7 @@ export class MessageGateway
   @SubscribeMessage('typing')
   handleTyping(
     @MessageBody() data: any,
-    @ConnectedSocket() client: AuthenticatedSocket,
+    @ConnectedSocket() client: Socket,
   ) {
     const { roomId, userid } = data;
     client.to(roomId).emit('usertyping', { userid });
@@ -128,7 +123,7 @@ export class MessageGateway
   @SubscribeMessage('fetchMessages')
   async fetchMessages(
     @MessageBody() roomId: string,
-    @ConnectedSocket() client: AuthenticatedSocket,
+    @ConnectedSocket() client: Socket,
   ) {
     try {
       const messages = await this.messageRepository.find({

@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
- 
+import { useAppSelector } from './redux/hooks';
+
 export function proxy(request: NextRequest) {
   const token = request.cookies.get('token')?.value;
   const isAuthenticated = !!token;
@@ -12,6 +13,10 @@ export function proxy(request: NextRequest) {
     pathname.startsWith('/login') ||
     pathname.startsWith('/register');
 
+  if (!isAuthenticated && pathname.startsWith('/users')) {
+    return NextResponse.redirect(new URL('/register', request.url));
+  }
+
   if (!isAuthenticated && !isPublicPath) {
     return NextResponse.redirect(new URL('/login', request.url));
   }
@@ -22,8 +27,8 @@ export function proxy(request: NextRequest) {
 
   return NextResponse.next();
 }
- 
- 
+
+
 export const config = {
   matcher: [
     '/',

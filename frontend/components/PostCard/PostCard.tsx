@@ -10,6 +10,7 @@ import SendRoundedIcon from '@mui/icons-material/SendRounded';
 import { differenceInSeconds, differenceInMinutes, differenceInHours, differenceInDays } from 'date-fns';
 
 import './postcard.css'
+import { Avatar } from "@mui/material";
 
 type Props = {
   post: any;
@@ -136,15 +137,7 @@ const PostCard = ({ post }: Props) => {
       )}
 
       <div className="post-header">
-        <div className="avatar">
-          {displayUser?.profilePicture ? (
-            <img src={displayUser.profilePicture} alt="avatar" />
-          ) : (
-            <div className="avatar-initial">
-              {displayUser?.firstName?.[0]?.toUpperCase() || "U"}
-            </div>
-          )}
-        </div>
+        <Avatar className="pro-avatar" sx={{ width: 50, height: 50, marginTop:0.0000000001, backgroundColor: '#0a66c2' }} src={currentProfile?.profilePicture ? currentProfile?.profilePicture : ""} />
         <div>
           <h4>{displayUser?.firstName} {displayUser?.lastName}</h4>
           <p className="role">{displayUser?.headline}</p>

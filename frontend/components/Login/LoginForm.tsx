@@ -19,7 +19,7 @@ import { auth, db, gitProvider, provider } from "../../app/config/firebase";
 import { signInWithEmailAndPassword, signInWithPopup } from "firebase/auth";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "@//redux/store";
-import { loginThunk, registerThunk } from "@//redux/features/users/userSlice";
+import { loginThunk, registerThunk, signInWithGoogleThunk } from "@//redux/features/users/userSlice";
 import { useAppSelector } from "@//redux/hooks";
 import { signOut } from "firebase/auth";
 import { FcGoogle } from "react-icons/fc";
@@ -72,42 +72,51 @@ export default function LoginForm() {
   const handleTogglePassword = () => setShowPassword((prev) => !prev);
 
   const handleSignIn = async () => {
-    if(googleLoading){
-      return;
-    }
-    setGoogleLoading(true);
-    try {
-      const result = await signInWithPopup(auth, provider);
-      const user = result.user;
-      const token = await user.getIdToken();
-
-      if (!user.email) {
-        throw new Error("Google account has no email");
+      if(googleLoading){
+        return;
       }
-
-      const loginData = {
-        email: user.email,
-        tokenId: token,
+      setGoogleLoading(true);
+      try {
+        const result = await signInWithPopup(auth, provider);
+        const user = result.user;
+        const token = await user.getIdToken();
+        
+        if (!user.email) {
+          throw new Error("Google account has no email");
+        }
+  
+        const registerData = {
+          email: user.email,
+          firstName: user.displayName,
+          tokenId: token,
+        };
+  
+        const registerResponse=await dispatch(signInWithGoogleThunk(registerData)).unwrap();
+        console.log(registerResponse,'---')
+      if (registerResponse.message !== 'User Signed in successfully') {
+        await signOut(auth);
+        throw new Error("Registration failed");
+      } else {
+      setSnackbarMessage("User signed in successfully");
+      setSnackbarOpen(true);
+      router.push('/')
       }
-
-      const loginResponse = await dispatch(loginThunk(loginData));
-
-      if (loginThunk.fulfilled.match(loginResponse)) {
-        setSnackbarMessage("Login successful!");
-        setSnackbarOpen(true);
-        setTimeout(() => router.push('/'), 1200);
-      }
-    } catch (error: any) {
+    } catch (err: any) {
       await signOut(auth);
-      Cookies.remove('token');
-      setSnackbarMessage(error.message);
+      console.log(err, 'error is here ')
+      const message =
+        err?.message?.includes("email-already-in-use") ||
+          err?.response?.data?.message?.includes("Email already registered")
+          ? "User already exists, please login"
+          : err?.message || "Registration failed";
+
+      setSnackbarMessage(message);
       setSnackbarOpen(true);
     }
     finally {
       setGoogleLoading(false);
     }
   };
-
 
   const onSubmit = async (data: LoginFormInputs) => {
     if (loading) return;
@@ -116,7 +125,6 @@ export default function LoginForm() {
       const response = await signInWithEmailAndPassword(auth, data.email, data.password);
       const user = response.user;
       const token = await user.getIdToken();
-      // Cookies.set('token', token, { expires: 1 / 24, secure: true, sameSite: 'strict' });
 
       const loginData = {
         email: data.email,

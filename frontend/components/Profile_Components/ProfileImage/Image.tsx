@@ -62,10 +62,14 @@ const Image = ({ id }: { id: any }) => {
     };
 
     useEffect(() => {
+        console.log('image profile')
+        if(!id){
+            return
+        }
         if (id) {
             dispatch(getProfileThunk(id));
         }
-    }, [id]);
+    }, []);
 
     return (
         <div className="header">

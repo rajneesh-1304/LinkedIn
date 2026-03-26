@@ -8,11 +8,11 @@ import { adminAuth } from 'src/firebaseAdmin';
 import { DataSource } from 'typeorm';
 
 @Injectable()
-export class LoginService {
+export class SignInWithGoogleService {
   constructor(private readonly dataSource: DataSource) { }
 
 
-  async login(data: { email: string, tokenId: string }) {
+  async signInWithGoogle(data: { email: string, tokenId: string }) {
     try {
       const decodedToken = await adminAuth.verifyIdToken(data.tokenId);
       const email = decodedToken.email;
@@ -21,7 +21,16 @@ export class LoginService {
       const userRepo = this.dataSource.getRepository(User);
       const user = await userRepo.findOne({ where: { email } });
 
-      if (!user) throw new NotFoundException('User not found');
+      if (!user) {
+        const newUser = userRepo.create({
+            email: email,
+        })
+        await userRepo.save(newUser);
+        return {
+            id: newUser.id,
+            email: newUser.email,
+        }
+      }
     
       return {
         id: user.id,

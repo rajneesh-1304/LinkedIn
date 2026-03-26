@@ -21,7 +21,7 @@ const Skills = ({ id }: { id: any }) => {
             dispatch(getSkillsThunk(id));
             dispatch(getAllSkillsThunk());
         }
-    }, [id, dispatch]);
+    }, []);
 
     return (
         <div className="header">

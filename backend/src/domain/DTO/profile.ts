@@ -1,6 +1,9 @@
 import { IsString, IsEmail, IsNotEmpty, IsIn, IsOptional } from 'class-validator';
 
 export class Profile {
+  @IsOptional()
+  id: string;
+
   @IsString()
   @IsOptional()
   firstName: string;
@@ -24,4 +27,7 @@ export class Profile {
   @IsString()
   @IsOptional()
   backgroundImage: string;
+
+  @IsOptional()
+  token: string;
 }

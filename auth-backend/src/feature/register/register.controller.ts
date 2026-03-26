@@ -3,6 +3,7 @@ import { Response } from 'express';
 import { RegisterService } from './register.service';
 import { PublisherService } from 'src/infra/rabbitMq/publisher';
 const jwt = require('jsonwebtoken');
+import axios from 'axios';
 
 @Controller('auth')
 export class RegisterController {
@@ -12,10 +13,23 @@ export class RegisterController {
   @Post('register')
   async registerUser(@Body() userData: any,
     @Res({ passthrough: true }) res: Response,) {
+      console.log(userData)
     const user = await this.registerService.register(userData);
 
+    const data = {
+      id: user.id,
+      token: userData.token,
+      firstName: userData.firstName,
+      lastName: userData.lastName,
+    }
+    try {
+      await axios.post('http://backend:3001/profile/add', data);
+    } catch (error) {
+      console.log(error);
+    }
+
     const token = jwt.sign(
-      { userId: user.id }, 
+      { userId: user.id },
       process.env.JWT_SECRET,
       { expiresIn: '8h' }
     );
@@ -26,7 +40,7 @@ export class RegisterController {
       sameSite: 'lax',
       maxAge: 1000 * 60 * 60 * 8,
     });
-    
+
     return {
       message: 'User created successfully',
       user,

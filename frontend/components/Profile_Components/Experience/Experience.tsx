@@ -16,10 +16,11 @@ const Experience = ({ id }: { id: any }) => {
   );
 
   useEffect(() => {
+    console.log('3 exper')
     if (id) {
       dispatch(getExperienceThunk(id));
     }
-  }, [id, dispatch]);
+  }, []);
   return (
     <div className="header">
       <div className="inner-header">

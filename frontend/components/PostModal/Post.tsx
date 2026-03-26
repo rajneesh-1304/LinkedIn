@@ -13,6 +13,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { addPostThunk, fetchPostThunk } from "@/redux/features/post/postSlice";
 import './post.css';
+import { Avatar } from "@mui/material";
 
 type PostModalProps = {
   close: () => void;
@@ -32,7 +33,7 @@ export default function Post({ close }: PostModalProps) {
 
   const currentUser = useAppSelector(state => state.users.currentUser);
   const id:any = currentUser?.id;
-  
+  const currentProfile = useAppSelector(state => state.profile.currentProfile);
 
   const [previews, setPreviews] = useState<string[]>([]);
   const dispatch = useAppDispatch();
@@ -123,9 +124,9 @@ export default function Post({ close }: PostModalProps) {
 
         <div className="post_header">
           <div className="post_user">
-            <div className="avatar">{currentUser?.firstName[0]}</div>
+            <Avatar className="pro-avatar" sx={{ width: 50, height: 50, marginTop:0.0000000001, backgroundColor: '#0a66c2' }} src={currentProfile?.profilePicture ? currentProfile?.profilePicture : ""} />
             <div>
-              <h4>{currentUser?.firstName}</h4>
+              <h4>{currentProfile?.firstName}</h4>
               <p>Post to Anyone</p>
             </div>
           </div>
