@@ -62,7 +62,7 @@ export default function SuggestionCard({ user, onRemove }: SuggestionCardProps) 
     isRequester: boolean;
   }>(null);
 
-  const [followersCount, setFollowersCount] = useState(user.followersCount || 0);
+  const [followersCount, setFollowersCount] = useState(user?.totalFollowers);
 
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
@@ -215,7 +215,7 @@ export default function SuggestionCard({ user, onRemove }: SuggestionCardProps) 
         </Typography>
 
         <Typography fontSize={13} color="text.secondary">
-          {user.totalFollowers} followers
+          {followersCount} followers
         </Typography>
 
         <Button

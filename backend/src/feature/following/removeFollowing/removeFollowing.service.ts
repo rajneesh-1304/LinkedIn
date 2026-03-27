@@ -10,13 +10,12 @@ import { DataSource } from 'typeorm';
 
 @Injectable()
 export class RemoveFollowService {
-  constructor(private readonly dataSource: DataSource) { }
+  constructor(private readonly dataSource: DataSource) {}
 
   async removeFollowing(followerId: string, userId: string) {
     if (!userId || !followerId) {
       throw new BadRequestException('User IDs are required');
     }
-
     if (userId === followerId) {
       throw new BadRequestException("You can't follow yourself");
     }
@@ -26,8 +25,8 @@ export class RemoveFollowService {
     await queryRunner.startTransaction();
 
     try {
-      const userRepo = this.dataSource.getRepository(User);
-      const followRepo = this.dataSource.getRepository(Follow);
+      const userRepo = queryRunner.manager.getRepository(User);
+      const followRepo = queryRunner.manager.getRepository(Follow);
 
       const [user, follower] = await Promise.all([
         userRepo.findOne({ where: { id: userId } }),
@@ -45,14 +44,14 @@ export class RemoveFollowService {
         throw new ConflictException('Not present in follower list');
       }
 
-      const res = await followRepo.delete(followRecord);
-      console.log(res, '---------------')
+      await followRepo.remove(followRecord); 
+      await userRepo.decrement({id: userId}, 'totalFollowers', 1);
+
       await queryRunner.commitTransaction();
 
       return {
         message: `${follower.firstName} unfollowed ${user.firstName}`,
       };
-
     } catch (error) {
       await queryRunner.rollbackTransaction();
       throw error;

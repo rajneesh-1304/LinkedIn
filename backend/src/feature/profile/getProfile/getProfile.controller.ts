@@ -12,5 +12,4 @@ export class GetProfileController {
   getProfile(@Param('id') id: string) {
     return this.getProfileService.getProfile(id);
   }
-
 }

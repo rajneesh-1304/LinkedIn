@@ -9,6 +9,37 @@ services:
       RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER}
       RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS}
 
+  redis:
+    image: redis:alpine
+    container_name: redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    networks:
+      - redis-network
+    healthcheck:
+      test:
+        - CMD
+        - redis-cli
+        - ping
+      retries: 3
+      timeout: 5s
+  #redis-insight
+  redis-insight:
+    image: redis/redisinsight:latest
+    container_name: redis-insight
+    restart: unless-stopped
+    ports:
+      - "5540:5540"
+    volumes:
+      - redis-insight-data:/data
+    networks:
+      - redis-network
+    depends_on:
+      - redis
+
   db:
     image: postgres:15
     container_name: postgres
@@ -54,6 +85,8 @@ services:
       DB_PASS: ${DB_PASS}
       DB_NAME: ${DB_NAME3}
       RABBITMQ_URL: ${RABBITMQ_URL}
+      REDIS_HOST: "redis-server"
+      REDIS_PORT: "6379"
     volumes:
       - ./auth-backend:/app
       - /app/node_modules
@@ -76,6 +109,7 @@ services:
       DB_PASS: ${DB_PASS}
       DB_NAME: ${DB_NAME}
       RABBITMQ_URL: ${RABBITMQ_URL}
+      REDIS_URL: ${REDIS_URL}
     volumes:
       - ./backend:/app
       - /app/node_modules
@@ -160,3 +194,12 @@ services:
 
 volumes:
   pgdata:
+  pgadmin-data:
+  redis-data:
+    driver: local
+  redis-insight-data:
+    driver: local
+
+networks:
+  redis-network:
+    driver: bridge
