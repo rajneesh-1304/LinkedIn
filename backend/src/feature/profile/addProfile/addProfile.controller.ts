@@ -10,38 +10,38 @@ export class AddProfileController {
   constructor(private readonly addProfileService: AddProfileService) { }
 
   @Post('add')
-  @UseInterceptors(
-    FileFieldsInterceptor(
-      [
-        { name: 'image', maxCount: 1 },
-        { name: 'backgroundImage', maxCount: 1 },
-      ],
-      {
-        storage: productImageStorage,
-        fileFilter: (req, file, cb) => {
-          if (!file.mimetype.startsWith('image/')) {
-            return cb(
-              new Error('Only image files are allowed'),
-              false,
-            );
-          }
-          cb(null, true);
-        },
-      },
-    ),
-  )
+  // @UseInterceptors(
+  //   FileFieldsInterceptor(
+  //     [
+  //       { name: 'image', maxCount: 1 },
+  //       { name: 'backgroundImage', maxCount: 1 },
+  //     ],
+  //     {
+  //       storage: productImageStorage,
+  //       fileFilter: (req, file, cb) => {
+  //         if (!file.mimetype.startsWith('image/')) {
+  //           return cb(
+  //             new Error('Only image files are allowed'),
+  //             false,
+  //           );
+  //         }
+  //         cb(null, true);
+  //       },
+  //     },
+  //   ),
+  // )
   updateProfile(
-    @Body() userData: Profile,
-    @UploadedFiles()
-    files: {
-      image?: Express.Multer.File[];
-      backgroundImage?: Express.Multer.File[];
-    },
+    @Body() data: any,
+    // @UploadedFiles()
+    // files: {
+    //   image?: Express.Multer.File[];
+    //   backgroundImage?: Express.Multer.File[];
+    // },
   ) {
     return this.addProfileService.addProfile(
-      userData,
-      files?.image?.[0],
-      files?.backgroundImage?.[0],
+      data,
+      // files?.image?.[0],
+      // files?.backgroundImage?.[0],
     );
   }
 }

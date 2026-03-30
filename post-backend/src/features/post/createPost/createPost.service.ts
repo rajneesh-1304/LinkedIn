@@ -6,16 +6,12 @@ import { Post } from "src/domain/post.entity";
 export class CreatePostService {
   constructor(private readonly dataSource: DataSource) { }
 
-  async createPost(id: string, data: any, files: Express.Multer.File[]) {
+  async createPost(id: string, data: any) {
     const postRepo = this.dataSource.getRepository(Post);
-
-    const imageUrls = files?.map(
-      (file) => `http://localhost:3002/uploads/${file.filename}`
-    ) || [];
 
     const post = postRepo.create({
       text: data.text,
-      image: imageUrls.length > 0 ? imageUrls : null,
+      image: data.images,
       userId: id,
     });
 

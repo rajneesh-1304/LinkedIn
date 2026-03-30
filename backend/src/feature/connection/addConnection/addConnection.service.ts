@@ -8,10 +8,14 @@ import { DataSource } from 'typeorm';
 import { User } from 'src/domain/entity/user.entity';
 import { Connection, ConnectionStatus } from 'src/domain/entity/connection.entity';
 import { Outbox } from 'src/domain/entity/outbox.entity';
+import Redis from 'ioredis';
+import { InjectRedis } from '@nestjs-modules/ioredis';
 
 @Injectable()
 export class AddConnectionService {
-  constructor(private readonly dataSource: DataSource) {}
+  constructor(
+    @InjectRedis() private readonly redis: Redis,
+    private readonly dataSource: DataSource) {}
 
   async addConnection(requesterId: string, userId: string) {
     if (!userId || !requesterId) {
@@ -56,10 +60,12 @@ export class AddConnectionService {
         status: ConnectionStatus.PENDING,
       });
 
+      
       await connectionRepo.save(connection);
-      await userRepo.increment({ id: userId }, 'totalConnections', 1);
-      await userRepo.increment({ id: requesterId }, 'totalConnections', 1);
-
+      await userRepo.increment({ id: requesterId }, 'totalInvitations', 1);
+      // await userRepo.increment({ id: userId }, 'totalConnections', 1);
+      // await userRepo.increment({ id: requesterId }, 'totalConnections', 1);
+      await this.redis.del(`user:${requesterId}`);
       const outbox = outboxRepo.create({
         message: {
           senderId: requester.id,

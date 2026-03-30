@@ -7,6 +7,7 @@ import './profile.css'
 import Skills from '../Profile_Components/Skills/Skills'
 
 const Profile = ({id}: {id: any}) => {
+  console.log('hello id', id);
   return (
     <div>
         <Navbar/>

@@ -20,9 +20,13 @@ import { GetTotalFollowingThunk } from "@/redux/features/following/followingSlic
 const NetworkLeftSidebar = () => {
   const currentUser= useAppSelector(state => state.users.currentUser);
   const id=currentUser?.id;
+  const currentProfile = useAppSelector(state => state.profile.currentProfile);
+
   const dispatch = useAppDispatch();
-  const totalFollowing = useAppSelector(state => state.following.totalFollowing);
-  const totalConnection = useAppSelector(state=> state.connection.totalConnection);
+  const totalFollowing = currentProfile?.totalFollowers || 0;
+  const totalConnection = currentProfile?.totalConnections || 0;
+  const totalInvitations = currentProfile?.totalInvitations || 0;
+  console.log(currentProfile, 'current profile in left sidebar', totalConnection, totalFollowing, totalInvitations);
 
   useEffect(()=>{
     dispatch(getTotalConnectionThunk({id}));
@@ -40,7 +44,7 @@ const NetworkLeftSidebar = () => {
         <Stack direction="row" justifyContent="space-between" className="stats-row">
 
           {[
-            { value: 0, label: "Invites sent" },
+            { value: totalInvitations, label: "Invites sent" },
             { value: totalConnection, label: "Connections" },
             { value: totalFollowing, label: "Following" }
           ].map((stat, i) => (

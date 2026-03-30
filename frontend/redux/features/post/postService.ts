@@ -1,10 +1,10 @@
 import axios from "axios";
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL2;
 
-export const addPost = async (id: string, data: FormData) => {
+export const addPost = async (id: string, postData: any) => {
   try {
     const url = `${BASE_URL}/createpost/${id}`;
-    const res = await axios.post(url, data, {
+    const res = await axios.post(url, postData, {
         withCredentials: true,
       },);
     return res.data;

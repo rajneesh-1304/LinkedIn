@@ -1,8 +1,10 @@
+import { InjectRedis } from '@nestjs-modules/ioredis';
 import {
     Injectable,
     NotFoundException,
     UnauthorizedException,
 } from '@nestjs/common';
+import Redis from 'ioredis';
 import { Profile } from 'src/domain/DTO/profile';
 import { User } from 'src/domain/entity/user.entity';
 import { adminAuth } from 'src/firebaseAdmin';
@@ -10,17 +12,15 @@ import { DataSource } from 'typeorm';
 
 @Injectable()
 export class AddProfileService {
-    constructor(private readonly dataSource: DataSource) { }
+    constructor(@InjectRedis() private readonly redis: Redis, private readonly dataSource: DataSource) { }
 
 
-    async addProfile(userData: Profile, file: Express.Multer.File, file2: Express.Multer.File) {
+    async addProfile(userData: any) {
         const decodedToken = await adminAuth.verifyIdToken(userData.token);
         const email = decodedToken.email;
         if (!email) throw new UnauthorizedException('Invalid token, no email found');
 
         const userRepo = this.dataSource.getRepository(User);
-        const imageUrls = `http://localhost:3001/uploads/${file?.filename}`;
-        const backgroundImage = `http://localhost:3001/uploads/${file2?.filename}`;
         const isExist = await userRepo.findOne({where: {id: userData.id}});
         if(isExist){
             return {message:"User Signed in successfully"};
@@ -33,11 +33,12 @@ export class AddProfileService {
                 lastName: userData.lastName ?? null,
                 headline: userData.headline ?? null,
                 location: userData.location ?? null,
-                profilePicture: file ? imageUrls : null,
+                profilePicture: userData.image,
                 bio: userData.bio ?? null,
-                backgroundImage: file2 ? backgroundImage : null,
+                backgroundImage: userData.backgroundImage,
             }
         );
+        await this.redis.del(`user:${userData.id}`);
         await userRepo.save(user);
         return {
             message: 'User created successfully',

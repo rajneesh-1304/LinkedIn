@@ -1,15 +1,17 @@
+import { InjectRedis } from '@nestjs-modules/ioredis';
 import {
   BadRequestException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
+import Redis from 'ioredis';
 import { Connection } from 'src/domain/entity/connection.entity';
 import { User } from 'src/domain/entity/user.entity';
 import { DataSource } from 'typeorm';
 
 @Injectable()
 export class RemoveConnectionService {
-  constructor(private readonly dataSource: DataSource) {}
+  constructor(@InjectRedis() private readonly redis: Redis, private readonly dataSource: DataSource) {}
 
   async removeConnection(userId: string, otherUserId: string) {
     if (!userId || !otherUserId) {
@@ -37,7 +39,7 @@ export class RemoveConnectionService {
     if (!connection) {
       throw new NotFoundException('Connection not found');
     }
-
+    await this.redis.del(`user:${otherUserId}`);
     await connectionRepo.remove(connection);
 
     return {

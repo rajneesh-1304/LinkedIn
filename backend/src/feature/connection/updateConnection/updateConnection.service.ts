@@ -1,8 +1,10 @@
+import { InjectRedis } from '@nestjs-modules/ioredis';
 import {
   BadRequestException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
+import Redis from 'ioredis';
 import { Connection, ConnectionStatus } from 'src/domain/entity/connection.entity';
 import { Outbox } from 'src/domain/entity/outbox.entity';
 import { User } from 'src/domain/entity/user.entity';
@@ -12,6 +14,7 @@ import { DataSource } from 'typeorm';
 @Injectable()
 export class UpdateConnectionService {
   constructor(
+    @InjectRedis() private readonly redis: Redis,
     private readonly dataSource: DataSource,
     private readonly publishService: PublisherService
   ) {}
@@ -48,6 +51,9 @@ export class UpdateConnectionService {
       }
 
       connection.status = ConnectionStatus.CONNECTED;
+      await userRepo.decrement({ id: otherUserId }, 'totalInvitations', -1);
+      await userRepo.increment({ id: userId }, 'totalConnections', 1);
+      await userRepo.increment({ id: otherUserId }, 'totalConnections', 1);
       await connectionRepo.save(connection);
 
       const outbox = outboxRepo.create({
@@ -62,6 +68,7 @@ export class UpdateConnectionService {
       });
 
       await outboxRepo.save(outbox);
+      await this.redis.del(`user:${otherUserId}`);
 
       await queryRunner.commitTransaction();
 

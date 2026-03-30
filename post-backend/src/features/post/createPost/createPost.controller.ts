@@ -9,16 +9,16 @@ export class CreatePostController {
   constructor(private readonly createPostService: CreatePostService) {}
 
   @UseGuards(JwtAuthGuard)
-  @UseInterceptors(
-    FilesInterceptor('images', 5, { storage: productImageStorage })
-  )
+  // @UseInterceptors(
+  //   FilesInterceptor('images', 5, { storage: productImageStorage })
+  // )
   @Post('createpost/:id')
   createPost(
     @Param('id') id: string,
-    @Body() data: any,
-    @UploadedFiles() files?: Express.Multer.File[], 
+    @Body() postData: any,
+    // @UploadedFiles() files?: Express.Multer.File[], 
   ) {
 
-    return this.createPostService.createPost(id, data, files);
+    return this.createPostService.createPost(id, postData);
   }
 }

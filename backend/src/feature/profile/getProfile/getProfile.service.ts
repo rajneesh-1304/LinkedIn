@@ -23,6 +23,7 @@ export class GetProfileService {
     const userRepo = this.dataSource.getRepository(User);
     const user = await userRepo.findOne({ where: { id } });
     if (!user) throw new NotFoundException('User not found');
+    console.log(user, 'user from db');
 
     await this.redis.set(`user:${id}`, JSON.stringify(user));
     return { user };

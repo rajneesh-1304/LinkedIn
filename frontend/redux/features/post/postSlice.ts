@@ -23,9 +23,9 @@ const initialState: PostState = {
 
 export const addPostThunk = createAsyncThunk(
   "post/add",
-  async ({id, formData}: any, { rejectWithValue }) => {
+  async ({id, postData}: any, { rejectWithValue }) => {
     try {
-      return await addPost(id, formData);
+      return await addPost(id, postData);
     } catch (err: any) {
       return rejectWithValue(err.message);
     }

@@ -1,16 +1,18 @@
+import { InjectRedis } from '@nestjs-modules/ioredis';
 import {
   BadRequestException,
   ConflictException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
+import Redis from 'ioredis';
 import { Follow } from 'src/domain/entity/follow.entity';
 import { User } from 'src/domain/entity/user.entity';
 import { DataSource } from 'typeorm';
 
 @Injectable()
 export class RemoveFollowService {
-  constructor(private readonly dataSource: DataSource) {}
+  constructor(@InjectRedis() private readonly redis: Redis, private readonly dataSource: DataSource) {}
 
   async removeFollowing(followerId: string, userId: string) {
     if (!userId || !followerId) {
@@ -46,6 +48,7 @@ export class RemoveFollowService {
 
       await followRepo.remove(followRecord); 
       await userRepo.decrement({id: userId}, 'totalFollowers', 1);
+      await this.redis.del(`user:${followerId}`);
 
       await queryRunner.commitTransaction();
 

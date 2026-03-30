@@ -2,12 +2,14 @@ import { privateApi } from "@/components/privateApi";
 import axios from "axios";
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 
-export const addProfile = async (userId: string, userData: any) => {
+export const addProfile = async (userId: string, data: any) => {
   try {
     const url = `${BASE_URL}/profile/update/${userId}`
-    const res = await privateApi.patch(url, userData, {
+    console.log(data, 'data')
+    const res = await privateApi.patch(url, data, {
       withCredentials: true,
     },);
+    console.log(res.data, 'response from add profile service')
     return res.data;
   } catch (error) {
     console.error("Error in Reigstering User:", error);

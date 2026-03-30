@@ -7,7 +7,7 @@ import { useParams } from 'next/navigation';
 const Page = () => {
   const params = useParams();
   const id = params?.id;
-
+  console.log('fasdlfasdf', id);
   return (
     <div className='profile-main'>
       <Profile id={id}/>

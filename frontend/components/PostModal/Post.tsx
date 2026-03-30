@@ -14,6 +14,7 @@ import * as z from "zod";
 import { addPostThunk, fetchPostThunk } from "@/redux/features/post/postSlice";
 import './post.css';
 import { Avatar } from "@mui/material";
+import { uploadToCloudinary } from "@/utils/cloudinary";
 
 type PostModalProps = {
   close: () => void;
@@ -90,12 +91,16 @@ export default function Post({ close }: PostModalProps) {
 
     const formData = new FormData();
     if (data.text) formData.append("text", data.text);
-
-    data.images?.forEach((file) => {
-      formData.append("images", file);
-    });
-
-    await dispatch(addPostThunk({ id, formData })).unwrap();
+    
+    const promises = data.images?.map((file) => uploadToCloudinary(file));
+    const imageUrls = promises ? await Promise.all(promises) : [];
+    // imageUrls.forEach((url: any) => formData.append("images", url));
+    
+    const postData = {
+      text: data.text,
+      images: imageUrls,
+    }
+    await dispatch(addPostThunk({ id, postData })).unwrap();
     
 
     setSnackbarMessage("Post created successfully!");

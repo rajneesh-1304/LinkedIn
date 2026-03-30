@@ -37,6 +37,9 @@ export class User {
     @Column({ default: 0 })
     totalConnections: number;
 
+    @Column({ default: 0 })
+    totalInvitations: number;
+
     @CreateDateColumn()
     createdAt: Date;
 

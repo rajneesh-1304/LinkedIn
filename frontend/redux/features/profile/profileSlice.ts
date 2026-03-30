@@ -31,9 +31,9 @@ const initialState: ProfileState = {
 
 export const addProfileThunk = createAsyncThunk(
   "profile/add",
-  async ({userId, formDataToSend}:any, { rejectWithValue }) => {
+  async ({userId, data}:any, { rejectWithValue }) => {
     try {
-      return await addProfile(userId, formDataToSend);
+      return await addProfile(userId, data);
     } catch (err: any) {
       return rejectWithValue(err.response);
     }

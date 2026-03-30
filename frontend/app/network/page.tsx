@@ -19,6 +19,8 @@ export default function MyNetworkPage() {
   const [requests, setRequests] = useState([]);
   const dispatch = useAppDispatch();
   const currentUser = useAppSelector(state => state.users.currentUser);
+  const currentProfile = useAppSelector(state => state.profile.currentProfile);
+  console.log(currentProfile, 'current profile in network page');
   const id = currentUser?.id;
   useEffect(() => {
     loadData();

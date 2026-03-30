@@ -28,6 +28,10 @@ export class Profile {
   @IsOptional()
   backgroundImage: string;
 
+  @IsString()
+  @IsOptional()
+  image: string;
+
   @IsOptional()
   token: string;
 }

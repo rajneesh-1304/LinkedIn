@@ -8,6 +8,8 @@ import { Box, Button, FormControl, Snackbar, TextField } from "@mui/material";
 import { useState } from "react";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { addProfileThunk, getProfileThunk } from "@/redux/features/profile/profileSlice";
+import axios from "axios";
+import { uploadToCloudinary } from "@/utils/cloudinary";
 
 type ProfileModalProps = {
   close: () => void;
@@ -30,16 +32,16 @@ const profileSchema = z.object({
   headline: z.string().min(3, "Headline must be at least 3 characters"),
   bio: z.string().min(3, 'Bio must be atleast 3 characters'),
   image: imageSchema.refine((file: File) => !!file, {
-      message: "Please upload one image only",
-    }),
+    message: "Please upload one image only",
+  }),
   backgroundImage: imageSchema.refine((file: File) => !!file, {
-      message: "Please upload one image only",
-    }),
+    message: "Please upload one image only",
+  }),
 });
 
 type ProfileFormData = z.infer<typeof profileSchema>;
 
-export default function ProfileModal({close }: ProfileModalProps) {
+export default function ProfileModal({ close }: ProfileModalProps) {
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const dispatch = useAppDispatch();
@@ -57,22 +59,19 @@ export default function ProfileModal({close }: ProfileModalProps) {
   });
 
   const onSubmit = async (formData: ProfileFormData) => {
-    const formDataToSend = new FormData();
-    formDataToSend.append("firstName", formData.firstName);
-    formDataToSend.append("lastName", formData.lastName);
-    formDataToSend.append("location", formData.location);
-    formDataToSend.append("headline", formData.headline);
-    formDataToSend.append('bio', formData.bio);
-
-    if (formData.image) {
-      formDataToSend.append("image", formData.image);
+    const image: any = await uploadToCloudinary(formData.image)
+    const backgroundImage: any = await uploadToCloudinary(formData.backgroundImage)
+    const data = {
+      firstName: formData.firstName,
+      lastName: formData.lastName,
+      location: formData.location,
+      headline: formData.headline,
+      bio: formData.bio,
+      image: image,
+      backgroundImage: backgroundImage,
     }
-    if(formData.backgroundImage) {
-      formDataToSend.append("backgroundImage", formData.backgroundImage);
-    }
-
     try {
-      await dispatch(addProfileThunk({ userId, formDataToSend })).unwrap();
+      await dispatch(addProfileThunk({ userId, data })).unwrap();
 
       setSnackbarMessage("Profile updated successfully!");
       setSnackbarOpen(true);

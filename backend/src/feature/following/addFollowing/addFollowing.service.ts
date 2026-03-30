@@ -8,10 +8,12 @@ import { DataSource } from 'typeorm';
 import { Follow } from 'src/domain/entity/follow.entity';
 import { User } from 'src/domain/entity/user.entity';
 import { Outbox } from 'src/domain/entity/outbox.entity';
+import Redis from 'ioredis';
+import { InjectRedis } from '@nestjs-modules/ioredis';
 
 @Injectable()
 export class AddFollowingService {
-  constructor(private readonly dataSource: DataSource) {}
+  constructor(@InjectRedis() private readonly redis: Redis, private readonly dataSource: DataSource) {}
 
   async addFollowing(followerId: string, userId: string) {
     if (!userId || !followerId) {
@@ -63,6 +65,7 @@ export class AddFollowingService {
 
       await followRepo.save(follow);
       await outboxRepo.save(outbox);
+      await this.redis.del(`user:${followerId}`);
       await userRepo.increment({ id: userId }, 'totalFollowers', 1);
 
       await queryRunner.commitTransaction();

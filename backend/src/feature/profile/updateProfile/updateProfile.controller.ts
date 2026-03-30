@@ -11,40 +11,41 @@ export class UpdateProfileController {
 
   @UseGuards(JwtAuthGuard)
   @Patch('update/:id')
-  @UseInterceptors(
-    FileFieldsInterceptor(
-      [
-        { name: 'image', maxCount: 1 },
-        { name: 'backgroundImage', maxCount: 1 },
-      ],
-      {
-        storage: productImageStorage,
-        fileFilter: (req, file, cb) => {
-          if (!file.mimetype.startsWith('image/')) {
-            return cb(
-              new Error('Only image files are allowed'),
-              false,
-            );
-          }
-          cb(null, true);
-        },
-      },
-    ),
-  )
+  // @UseInterceptors(
+  //   FileFieldsInterceptor(
+  //     [
+  //       { name: 'image', maxCount: 1 },
+  //       { name: 'backgroundImage', maxCount: 1 },
+  //     ],
+  //     {
+  //       storage: productImageStorage,
+  //       fileFilter: (req, file, cb) => {
+  //         if (!file.mimetype.startsWith('image/')) {
+  //           return cb(
+  //             new Error('Only image files are allowed'),
+  //             false,
+  //           );
+  //         }
+  //         cb(null, true);
+  //       },
+  //     },
+  //   ),
+  // )
   updateProfile(
     @Param('id') id: string,
-    @Body() userData: Profile,
-    @UploadedFiles()
-    files: {
-      image?: Express.Multer.File[];
-      backgroundImage?: Express.Multer.File[];
-    },
+    @Body() formDataToSend: any,
+    // @UploadedFiles()
+    // files: {
+    //   image?: Express.Multer.File[];
+    //   backgroundImage?: Express.Multer.File[];
+    // },
   ) {
+    console.log(id, formDataToSend, 'this is id and user data in controller');
     return this.updateService.updateProfile(
       id,
-      userData,
-      files?.image?.[0],
-      files?.backgroundImage?.[0],
+      formDataToSend,
+      // files?.image?.[0],
+      // files?.backgroundImage?.[0],
     );
   }
 }
